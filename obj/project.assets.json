@@ -1,12 +1,12 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.1": {
-      "GoRogue/2.6.0": {
+    "net5.0": {
+      "GoRogue/2.6.4": {
         "type": "package",
         "dependencies": {
           "OptimizedPriorityQueue": "4.2.0",
-          "Troschuetz.Random": "4.3.1"
+          "Troschuetz.Random": "4.4.0"
         },
         "compile": {
           "lib/netstandard2.0/GoRogue.dll": {}
@@ -15,13 +15,16 @@
           "lib/netstandard2.0/GoRogue.dll": {}
         }
       },
-      "MonoGame.Framework.DesktopGL.Core/3.8.0.1": {
+      "MonoGame.Framework.DesktopGL/3.8.0.1641": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/MonoGame.Framework.dll": {}
         },
         "runtime": {
           "lib/netstandard2.0/MonoGame.Framework.dll": {}
+        },
+        "build": {
+          "build/MonoGame.Framework.DesktopGL.targets": {}
         },
         "runtimeTargets": {
           "runtimes/linux-x64/native/libSDL2-2.0.so.0": {
@@ -76,7 +79,7 @@
           "lib/netstandard1.0/Priority Queue.dll": {}
         }
       },
-      "SadConsole/8.99.0": {
+      "SadConsole/8.99.3": {
         "type": "package",
         "dependencies": {
           "newtonsoft.json": "11.0.2"
@@ -88,10 +91,10 @@
           "lib/netstandard2.0/SadConsole.dll": {}
         }
       },
-      "SadConsole.GoRogueHelpers/1.0.0": {
+      "SadConsole.GoRogueHelpers/1.0.1": {
         "type": "package",
         "dependencies": {
-          "GoRogue": "2.6.0",
+          "GoRogue": "2.6.4",
           "SadConsole": "8.9.1"
         },
         "compile": {
@@ -101,7 +104,7 @@
           "lib/netstandard2.0/SadConsole.GoRogue.dll": {}
         }
       },
-      "Troschuetz.Random/4.3.1": {
+      "Troschuetz.Random/4.4.0": {
         "type": "package",
         "compile": {
           "lib/netstandard2.1/Troschuetz.Random.dll": {}
@@ -113,34 +116,35 @@
     }
   },
   "libraries": {
-    "GoRogue/2.6.0": {
-      "sha512": "xAwX6Ww7HKbYeVFblvIozbLuqeB+uVh0ZbSG2IX0y10fSYjjcrsn68mDHTWsws7B4gnoaX9EMCYzn5Pe2t8kGA==",
+    "GoRogue/2.6.4": {
+      "sha512": "nyClW1RMfwjr+tKMU+QXDDAsXqXEvfZW+whSB2KrvHIAeVKlwN+hoYAmmnpGvXLAmV4X32RrE+IcOvkQkslW9Q==",
       "type": "package",
-      "path": "gorogue/2.6.0",
+      "path": "gorogue/2.6.4",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "gorogue.2.6.0.nupkg.sha512",
+        "gorogue.2.6.4.nupkg.sha512",
         "gorogue.nuspec",
         "lib/netstandard2.0/GoRogue.dll",
         "lib/netstandard2.0/GoRogue.xml",
         "readme.txt"
       ]
     },
-    "MonoGame.Framework.DesktopGL.Core/3.8.0.1": {
-      "sha512": "5wTVgO9R+0KQ+QlvPMGBuUjnZbAqFd0guHf++1C2fLpqqdLkhI4SBGAgOB+nbgDaENMGkE5PJBj3IH0Xvc6TZg==",
+    "MonoGame.Framework.DesktopGL/3.8.0.1641": {
+      "sha512": "rJQlrlHQbnOECYV6EcQ8GlGRQ2lzPTroXQcyyOZ0ki+BQRSJEN2zVBm9skqLiXya348aGAfTSSGTaSKjAy9NaA==",
       "type": "package",
-      "path": "monogame.framework.desktopgl.core/3.8.0.1",
+      "path": "monogame.framework.desktopgl/3.8.0.1641",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "Icon.png",
         "build/MonoGame.Framework.DesktopGL.targets",
         "lib/net452/MonoGame.Framework.dll",
         "lib/net452/MonoGame.Framework.xml",
         "lib/netstandard2.0/MonoGame.Framework.dll",
         "lib/netstandard2.0/MonoGame.Framework.xml",
-        "monogame.framework.desktopgl.core.3.8.0.1.nupkg.sha512",
-        "monogame.framework.desktopgl.core.nuspec",
+        "monogame.framework.desktopgl.3.8.0.1641.nupkg.sha512",
+        "monogame.framework.desktopgl.nuspec",
         "runtimes/linux-x64/native/libSDL2-2.0.so.0",
         "runtimes/linux-x64/native/libopenal.so.1",
         "runtimes/osx/native/libSDL2-2.0.0.dylib",
@@ -210,40 +214,43 @@
         "optimizedpriorityqueue.nuspec"
       ]
     },
-    "SadConsole/8.99.0": {
-      "sha512": "WYiEWJfpdNcjLmbxutjyXTkVUIqfu9TqPFq+jmUvOXV/tmnh+DHjdRrtpGiJB94oDRxVwpncISoKiRTiuK1agA==",
+    "SadConsole/8.99.3": {
+      "sha512": "+jh51lyR331oMx5uOQwOMCmqL1MbF2c6BDRhKE7Vn0eYTp0rYvyA3SFlx44ddrESOkDDXHtfeIbud4Z8+eM8fQ==",
       "type": "package",
-      "path": "sadconsole/8.99.0",
+      "path": "sadconsole/8.99.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "icon.png",
         "lib/netstandard2.0/SadConsole.dll",
         "lib/netstandard2.0/SadConsole.xml",
         "readme.txt",
-        "sadconsole.8.99.0.nupkg.sha512",
+        "sadconsole.8.99.3.nupkg.sha512",
         "sadconsole.nuspec"
       ]
     },
-    "SadConsole.GoRogueHelpers/1.0.0": {
-      "sha512": "GhrhMGRjw9+hqDYZcFeOq/KkYEBVpaqnJJbJJ7mx+JfmvEbUnwV4yBtWhVpTGxZaNpqNJiasReYhuCN9+KsckA==",
+    "SadConsole.GoRogueHelpers/1.0.1": {
+      "sha512": "f1g2CIM/sNwAqaWQKXlWjTD+TfABasuZXHXagCb5cpORdBLakeOqCZ/u7yO4wufj2SjE5G+fxp9GeI8G1Sxxcg==",
       "type": "package",
-      "path": "sadconsole.goroguehelpers/1.0.0",
+      "path": "sadconsole.goroguehelpers/1.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netstandard2.0/SadConsole.GoRogue.dll",
         "lib/netstandard2.0/SadConsole.GoRogue.xml",
-        "sadconsole.goroguehelpers.1.0.0.nupkg.sha512",
+        "sadconsole.goroguehelpers.1.0.1.nupkg.sha512",
         "sadconsole.goroguehelpers.nuspec"
       ]
     },
-    "Troschuetz.Random/4.3.1": {
-      "sha512": "F6ofytpDeE1LGyEeg9T+jfEYJ5QdfdhkqZ7R8GFBQ91nZMmAMTirnL5gkh2bygo1yDN+e6aZQldA7k1BjYalSg==",
+    "Troschuetz.Random/4.4.0": {
+      "sha512": "SIESLPNQUIo8FkfeFaaJZcE0/r+Vg6nicacYDvZB+rTOl4VTKK5lEqCW2SvkLLaUV11jnCtna73LQ7iXAHumGA==",
       "type": "package",
-      "path": "troschuetz.random/4.3.1",
+      "path": "troschuetz.random/4.4.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "LICENSE",
+        "icon.png",
         "lib/net35/Troschuetz.Random.dll",
         "lib/net35/Troschuetz.Random.pdb",
         "lib/net35/Troschuetz.Random.xml",
@@ -268,17 +275,17 @@
         "lib/netstandard2.1/Troschuetz.Random.dll",
         "lib/netstandard2.1/Troschuetz.Random.pdb",
         "lib/netstandard2.1/Troschuetz.Random.xml",
-        "troschuetz.random.4.3.1.nupkg.sha512",
+        "troschuetz.random.4.4.0.nupkg.sha512",
         "troschuetz.random.nuspec"
       ]
     }
   },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.1": [
-      "GoRogue >= 2.6.0",
-      "MonoGame.Framework.DesktopGL.Core >= 3.8.0.1",
-      "SadConsole >= 8.99.0",
-      "SadConsole.GoRogueHelpers >= 1.0.0"
+    "net5.0": [
+      "GoRogue >= 2.6.4",
+      "MonoGame.Framework.DesktopGL >= 3.8.0.1641",
+      "SadConsole >= 8.99.3",
+      "SadConsole.GoRogueHelpers >= 1.0.1"
     ]
   },
   "packageFolders": {
@@ -298,15 +305,15 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "netcoreapp3.1"
+        "net5.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
+        "net5.0": {
+          "targetAlias": "net5.0",
           "projectReferences": {}
         }
       },
@@ -317,24 +324,24 @@
       }
     },
     "frameworks": {
-      "netcoreapp3.1": {
-        "targetAlias": "netcoreapp3.1",
+      "net5.0": {
+        "targetAlias": "net5.0",
         "dependencies": {
           "GoRogue": {
             "target": "Package",
-            "version": "[2.6.0, )"
+            "version": "[2.6.4, )"
           },
-          "MonoGame.Framework.DesktopGL.Core": {
+          "MonoGame.Framework.DesktopGL": {
             "target": "Package",
-            "version": "[3.8.0.1, )"
+            "version": "[3.8.0.1641, )"
           },
           "SadConsole": {
             "target": "Package",
-            "version": "[8.99.0, )"
+            "version": "[8.99.3, )"
           },
           "SadConsole.GoRogueHelpers": {
             "target": "Package",
-            "version": "[1.0.0, )"
+            "version": "[1.0.1, )"
           }
         },
         "imports": [

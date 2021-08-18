@@ -3,7 +3,7 @@ using GoRogue;
 using Microsoft.Xna.Framework;
 using SadConsole;
 
-namespace RogueGame
+namespace RogueGame.Maps
 {
     internal enum MapLayer
     {
@@ -13,7 +13,7 @@ namespace RogueGame
         PLAYER
     }
 
-    internal class RogueGameMap : BasicMap
+    public class RogueGameMap : BasicMap
     {
         // Handles the changing of tile/entity visiblity as appropriate based on Map.FOV.
         public FOVVisibilityHandler FovVisibilityHandler { get; }

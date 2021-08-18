@@ -2,14 +2,35 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GoRogue" Version="2.6.0" />
-    <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.8.0.1" />
-    <PackageReference Include="SadConsole" Version="8.99.0" />
-    <PackageReference Include="SadConsole.GoRogueHelpers" Version="1.0.0" />
+    <PackageReference Include="GoRogue" Version="2.6.4" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
+    <PackageReference Include="SadConsole" Version="8.99.3" />
+    <PackageReference Include="SadConsole.GoRogueHelpers" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Fonts\Rogue.font" />
+    <Content Include="Fonts\Rogue.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Fonts\Rogue.png" />
+    <Content Include="Fonts\Rogue.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Fonts\Terminal8x8.font" />
+    <Content Include="Fonts\Terminal8x8.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Fonts\Terminal8x8.png" />
+    <Content Include="Fonts\Terminal8x8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
