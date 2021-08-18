@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "2j63QtMbjessYtwA85HbsEP8TgKcQ6QoS6ASzCUrB2xfNqTH/X0B9y5w3r4fb73V+AGkadgKemD7phGoZepcHA==",
+  "success": true,
+  "projectFilePath": "D:\\Projects\\Games\\RogueGame\\RogueGame.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\pav44\\.nuget\\packages\\gorogue\\2.6.0\\gorogue.2.6.0.nupkg.sha512",
+    "C:\\Users\\pav44\\.nuget\\packages\\monogame.framework.desktopgl.core\\3.8.0.1\\monogame.framework.desktopgl.core.3.8.0.1.nupkg.sha512",
+    "C:\\Users\\pav44\\.nuget\\packages\\newtonsoft.json\\11.0.2\\newtonsoft.json.11.0.2.nupkg.sha512",
+    "C:\\Users\\pav44\\.nuget\\packages\\optimizedpriorityqueue\\4.2.0\\optimizedpriorityqueue.4.2.0.nupkg.sha512",
+    "C:\\Users\\pav44\\.nuget\\packages\\sadconsole\\8.99.0\\sadconsole.8.99.0.nupkg.sha512",
+    "C:\\Users\\pav44\\.nuget\\packages\\sadconsole.goroguehelpers\\1.0.0\\sadconsole.goroguehelpers.1.0.0.nupkg.sha512",
+    "C:\\Users\\pav44\\.nuget\\packages\\troschuetz.random\\4.3.1\\troschuetz.random.4.3.1.nupkg.sha512"
+  ],
+  "logs": []
+}
