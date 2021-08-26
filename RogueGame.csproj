@@ -16,19 +16,18 @@
 
   <ItemGroup>
     <None Remove="Fonts\Rogue.font" />
-    <Content Include="Fonts\Rogue.font">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Remove="Fonts\Rogue.png" />
-    <Content Include="Fonts\Rogue.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Remove="Fonts\Terminal8x8.font" />
-    <Content Include="Fonts\Terminal8x8.font">
+    <None Remove="Fonts\Terminal8x8.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Fonts\sprites.font" />
+    <Content Include="Fonts\sprites.font">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Remove="Fonts\Terminal8x8.png" />
-    <Content Include="Fonts\Terminal8x8.png">
+    <None Remove="Fonts\sprites.png" />
+    <Content Include="Fonts\sprites.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
