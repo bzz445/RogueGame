@@ -1,6 +1,8 @@
 ﻿using SadConsole;
 using System;
 using Microsoft.Xna.Framework;
+using RogueGame.Components;
+using RogueGame.GameSystems.Items;
 using RogueGame.Maps;
 using Console = SadConsole.Console;
 
@@ -43,8 +45,10 @@ namespace RogueGame.Ui
             
             var eventLog = new MessageLog(ViewPortWidth, eventLogHeight, Global.FontDefault);
             eventLog.Position = new Point(leftPaneWidth, mapConsole.MapRenderer.ViewPort.Height + topPaneHeight);
+            mapConsole.Player.GetGoRogueComponent<IInventoryComponent>().Items.Add(new InventoryItem("trusty oak staff"));
             eventLog.Add("Hello world!");
-
+            leftPane.Print(3,1, "Test dungeon");
+            
             var screen = new ContainerConsole();
             screen.Children.Add(leftPane);
             screen.Children.Add(topPane);
