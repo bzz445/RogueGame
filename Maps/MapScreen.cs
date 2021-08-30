@@ -12,24 +12,18 @@ namespace RogueGame.Maps
     internal class MapScreen : ContainerConsole
     {
         public MovingCastlesMap Map { get; }
-
         public ScrollingConsole MapRenderer { get; }
 
-        public MapScreen(int mapWidth, int mapHeight, int viewportWidth, int viewportHeight)
+        public MapScreen(int mapWidth, int mapHeight, int viewportWidth, int viewportHeight, Font tileSetFont)
         {
-            Map = GenerateDungeon(mapWidth, mapHeight);
+            Map = GenerateDungeon(mapWidth, mapHeight, tileSetFont);
 
-            // Get a console that's set up to render the map, and add it as a child of this container so it renders
-            MapRenderer = Map.CreateRenderer(new XnaRect(0, 0, viewportWidth, viewportHeight), Global.FontDefault);
+            MapRenderer = Map.CreateRenderer(new XnaRect(0, 0, viewportWidth, viewportHeight), tileSetFont);
             Children.Add(MapRenderer);
-            Map.ControlledGameObject.IsFocused = true; // Set player to receive input, since in this example the player handles movement
-
-            // Set up to recalculate FOV and set camera position appropriately when the player moves.  Also make sure we hook the new
-            // Player if that object is reassigned.
+            Map.ControlledGameObject.IsFocused = true;
             Map.ControlledGameObject.Moved += Player_Moved;
             Map.ControlledGameObjectChanged += ControlledGameObjectChanged;
 
-            // Calculate initial FOV and center camera
             Map.CalculateFOV(Map.ControlledGameObject.Position, Map.ControlledGameObject.FOVRadius, Radius.SQUARE);
             MapRenderer.CenterViewPortOnPoint(Map.ControlledGameObject.Position);
         }
@@ -39,32 +33,32 @@ namespace RogueGame.Maps
             if (e.OldObject != null)
                 e.OldObject.Moved -= Player_Moved;
 
-            ((BasicMap)s).ControlledGameObject.Moved += Player_Moved;
+            ((BasicMap) s).ControlledGameObject.Moved += Player_Moved;
         }
-        private static MovingCastlesMap GenerateDungeon(int width, int height)
+
+        private static MovingCastlesMap GenerateDungeon(int width, int height, Font tileSetFont)
         {
-            // Same size as screen, but we set up to center the camera on the player so expanding beyond this should work fine with no other changes.
             var map = new MovingCastlesMap(width, height);
 
-            // Generate map via GoRogue, and update the real map with appropriate terrain.
             var tempMap = new ArrayMap<bool>(map.Width, map.Height);
             QuickGenerators.GenerateRandomRoomsMap(tempMap, maxRooms: 180, roomMinSize: 8, roomMaxSize: 12);
             map.ApplyTerrainOverlay(tempMap, SpawnTerrain);
 
             Coord posToSpawn;
 
-            // Spawn a few mock enemies
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                posToSpawn = map.WalkabilityView.RandomPosition(true); // Get a location that is walkable
-                var goblin = new BasicEntity(Color.White, Color.Transparent, SpriteAtlas.Goblin, posToSpawn, (int)MapLayer.MONSTERS, isWalkable: false, isTransparent: true);
+                posToSpawn = map.WalkabilityView.RandomPosition(true);
+                var goblin = new BasicEntity(Color.White, Color.Transparent, SpriteAtlas.Goblin, posToSpawn, (int) MapLayer.MONSTERS, isWalkable: false, isTransparent: true);
+                goblin.Font = tileSetFont;
+                goblin.OnCalculateRenderPosition();
                 map.AddEntity(goblin);
             }
 
             // Spawn player
             posToSpawn = map.WalkabilityView.RandomPosition(true);
 
-            var player = new Player(posToSpawn);
+            var player = new Player(posToSpawn, tileSetFont);
             map.ControlledGameObject = player;
             map.AddEntity(player);
 

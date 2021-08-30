@@ -30,6 +30,16 @@
     <Content Include="Fonts\sprites.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Remove="Fonts\rect.font" />
+    <Content Include="Fonts\rus.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Fonts\rect.png" />
+    <Content Include="Fonts\rus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Fonts\IBM.font" />
+    <None Remove="Fonts\IBM8x16.png" />
   </ItemGroup>
 
 </Project>

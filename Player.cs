@@ -29,10 +29,6 @@ namespace RogueGame
 
         public int FOVRadius;
 
-        public Player(Coord position)
-            : this(position, Global.FontDefault)
-        { }
-
         public Player(Coord position, Font font)
             : base(Color.White,
                   Color.Transparent,
@@ -44,6 +40,7 @@ namespace RogueGame
         {
             FOVRadius = 10;
             Font = font;
+            OnCalculateRenderPosition();
         }
 
         public override bool ProcessKeyboard(SadConsole.Input.Keyboard info)
