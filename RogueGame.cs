@@ -55,11 +55,11 @@ namespace RogueGame
 
             colors.Lines = colors.Gray;
 
-            colors.ControlBack = colors.Black;
-            colors.ControlBackLight = colors.Black;
+            colors.ControlBack = UiManager.MidnightEstBlue;
+            colors.ControlBackLight = UiManager.MidnightEstBlue;
             colors.ControlBackSelected = colors.GrayDark;
-            colors.ControlBackDark = colors.Black;
-            colors.ControlHostBack = colors.Black;
+            colors.ControlBackDark = UiManager.MidnightEstBlue;
+            colors.ControlHostBack = UiManager.MidnightEstBlue;
             colors.ControlHostFore = colors.Text;
 
             colors.RebuildAppearances();
