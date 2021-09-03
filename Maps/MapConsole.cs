@@ -7,56 +7,85 @@ using GoRogue.MapViews;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using RogueGame.Components;
+using RogueGame.Consoles;
+using RogueGame.Entities;
 using RogueGame.Fonts;
 using RogueGame.GameSystems.Items;
+using RogueGame.Ui;
 using SadConsole;
+using SadConsole.Input;
 using Keyboard = SadConsole.Input.Keyboard;
 using XnaRect = Microsoft.Xna.Framework.Rectangle;
 
 namespace RogueGame.Maps
 {
-    internal class MapScreen : ContainerConsole
+    internal class MapConsole : ContainerConsole
     {
         private static readonly Dictionary<Keys, Direction> MovementDirectionMapping = new Dictionary<Keys, Direction>
         {
-            { Keys.NumPad7, Direction.UP_LEFT },
-            { Keys.NumPad8, Direction.UP },
-            { Keys.NumPad9, Direction.UP_RIGHT },
-            { Keys.NumPad4, Direction.LEFT },
-            { Keys.NumPad6, Direction.RIGHT },
-            { Keys.NumPad1, Direction.DOWN_LEFT },
-            { Keys.NumPad2, Direction.DOWN },
-            { Keys.NumPad3, Direction.DOWN_RIGHT },
-            { Keys.Up, Direction.UP },
-            { Keys.Down, Direction.DOWN },
-            { Keys.Left, Direction.LEFT },
-            { Keys.Right, Direction.RIGHT }
+            {Keys.NumPad7, Direction.UP_LEFT},
+            {Keys.NumPad8, Direction.UP},
+            {Keys.NumPad9, Direction.UP_RIGHT},
+            {Keys.NumPad4, Direction.LEFT},
+            {Keys.NumPad6, Direction.RIGHT},
+            {Keys.NumPad1, Direction.DOWN_LEFT},
+            {Keys.NumPad2, Direction.DOWN},
+            {Keys.NumPad3, Direction.DOWN_RIGHT},
+            {Keys.Up, Direction.UP},
+            {Keys.Down, Direction.DOWN},
+            {Keys.Left, Direction.LEFT},
+            {Keys.Right, Direction.RIGHT}
         };
+
+        private readonly IMenuProvider _menuProvider;
+        private readonly Console _mouseHightlight;
+        private readonly IEntityFactory _entityFactory;
+
+        private Point _lastSummaryConsolePosition;
+        public event System.EventHandler<ConsoleListEventArgs> SummaryConsolesChanged;
+
         public MovingCastlesMap Map { get; }
         public ScrollingConsole MapRenderer { get; }
-        
+
         public Player Player { get; private set; }
 
-        public MapScreen(int mapWidth, int mapHeight, int viewportWidth, int viewportHeight, Font tileSetFont)
+        public MapConsole(
+            int mapWidth,
+            int mapHeight,
+            int viewportWidth,
+            int viewportHeight,
+            Font tileSetFont,
+            IMenuProvider menuProvider,
+            IEntityFactory entityFactory)
         {
+            _menuProvider = menuProvider;
+            _entityFactory = entityFactory;
+
+            _mouseHightlight = new Console(1, 1, tileSetFont);
+            _mouseHightlight.SetGlyph(0, 0, 1, ColorHelper.WhiteHighlight);
+            _mouseHightlight.UseMouse = false;
+
             Map = GenerateDungeon(mapWidth, mapHeight, tileSetFont);
 
             MapRenderer = Map.CreateRenderer(new XnaRect(0, 0, viewportWidth, viewportHeight), tileSetFont);
-            Children.Add(MapRenderer);
-            //Map.ControlledGameObject.IsFocused = true;
+            MapRenderer.UseMouse = false;
             IsFocused = true;
+            //Map.ControlledGameObject.IsFocused = true;
             Map.ControlledGameObject.Moved += Player_Moved;
             Map.ControlledGameObjectChanged += ControlledGameObjectChanged;
 
             Map.CalculateFOV(Map.ControlledGameObject.Position, Map.ControlledGameObject.FOVRadius, Radius.SQUARE);
             MapRenderer.CenterViewPortOnPoint(Map.ControlledGameObject.Position);
+
+            Children.Add(MapRenderer);
+            Children.Add(_mouseHightlight);
         }
 
         public override bool ProcessKeyboard(Keyboard info)
         {
             if (info.IsKeyPressed(Keys.I))
             {
-                Window.Message($"Inventory: {string.Join(", ", Player.GetGoRogueComponent<IInventoryComponent>().Items.Select(i => i.Name))}", "Close");
+                _menuProvider.Inventory.Show(Player.GetGoRogueComponent<IInventoryComponent>());
                 return true;
             }
 
@@ -65,11 +94,42 @@ namespace RogueGame.Maps
                 if (info.IsKeyPressed(key))
                 {
                     Player.Move(MovementDirectionMapping[key]);
+                    _lastSummaryConsolePosition = default;
                     return true;
                 }
             }
-            
+
             return base.ProcessKeyboard(info);
+        }
+
+        public override bool ProcessMouse(MouseConsoleState state)
+        {
+            var mapState = new MouseConsoleState(MapRenderer, state.Mouse);
+            _mouseHightlight.IsVisible = mapState.IsOnConsole;
+            _mouseHightlight.Position = mapState.ConsoleCellPosition;
+
+            var mapCoord = new Coord(
+                mapState.ConsoleCellPosition.X + MapRenderer.ViewPort.X,
+                mapState.ConsoleCellPosition.Y + MapRenderer.ViewPort.Y);
+            if (mapState.IsOnConsole
+                && _lastSummaryConsolePosition != mapState.ConsoleCellPosition
+                && Map.FOV.CurrentFOV.Contains(mapCoord))
+            {
+                var summaryControls = new List<Console>();
+                foreach (var entity in Map.GetEntities<BasicEntity>(mapCoord))
+                {
+                    var control = entity.GetGoRogueComponent<ISummaryControlComponent>()?.GetSidebarSummary();
+                    if (control != null)
+                    {
+                        summaryControls.Add(control);
+                    }
+                }
+
+                _lastSummaryConsolePosition = mapState.ConsoleCellPosition;
+                SummaryConsolesChanged.Invoke(this, new ConsoleListEventArgs(summaryControls));
+            }
+
+            return base.ProcessMouse(state);
         }
 
         private void ControlledGameObjectChanged(object s, ControlledGameObjectChangedArgs e)
@@ -93,9 +153,7 @@ namespace RogueGame.Maps
             for (var i = 0; i < 10; i++)
             {
                 posToSpawn = map.WalkabilityView.RandomPosition(true);
-                var goblin = new BasicEntity(Color.White, Color.Transparent, SpriteAtlas.Goblin, posToSpawn, (int) MapLayer.MONSTERS, isWalkable: false, isTransparent: true);
-                goblin.Font = tileSetFont;
-                goblin.OnCalculateRenderPosition();
+                var goblin = _entityFactory.CreateActor(SpriteAtlas.Goblin, posToSpawn, "Goblin");
                 map.AddEntity(goblin);
             }
 
@@ -104,18 +162,11 @@ namespace RogueGame.Maps
             {
                 posToSpawn = map.WalkabilityView.RandomPosition(true);
 
-                var item = new BasicEntity(
-                    Color.White,
-                    Color.Transparent,
+                var item = _entityFactory.CreateItem(
                     SpriteAtlas.EtheriumShard,
                     posToSpawn,
-                    (int) MapLayer.ITEMS,
-                    isWalkable: true,
-                    isTransparent: true
-                );
-                item.AddGoRogueComponent(new PickupableComponent(new InventoryItem("Etherium shard")));
-                item.Font = tileSetFont;
-                item.OnCalculateRenderPosition();
+                    "Etherium shard",
+                    "Crystalized by the precise artistry of master artificers, etherium is the essence of magic.");
 
                 map.AddEntity(item);
             }

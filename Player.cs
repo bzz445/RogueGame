@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using GoRogue;
+﻿using GoRogue;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using RogueGame.Components;
 using RogueGame.Fonts;
 using RogueGame.Maps;
@@ -26,6 +24,7 @@ namespace RogueGame
             Name = "Player";
             Font = font;
             OnCalculateRenderPosition();
+            AddGoRogueComponent(new HealthComponent(1));
             AddGoRogueComponent(new InventoryComponent());
         }
 

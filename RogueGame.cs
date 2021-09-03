@@ -36,7 +36,8 @@ namespace RogueGame
 
             InitColors();
 
-            Global.CurrentScreen = _uiManager.CreateMainMenu();
+            //Global.CurrentScreen = _uiManager.CreateMainMenu();
+            Global.CurrentScreen = _uiManager.CreateMapScreen();
         }
 
         private void InitColors()
@@ -55,11 +56,11 @@ namespace RogueGame
 
             colors.Lines = colors.Gray;
 
-            colors.ControlBack = UiManager.MidnightEstBlue;
-            colors.ControlBackLight = UiManager.MidnightEstBlue;
+            colors.ControlBack = ColorHelper.MidnightEstBlue;
+            colors.ControlBackLight = ColorHelper.MidnightEstBlue;
             colors.ControlBackSelected = colors.GrayDark;
-            colors.ControlBackDark = UiManager.MidnightEstBlue;
-            colors.ControlHostBack = UiManager.MidnightEstBlue;
+            colors.ControlBackDark = ColorHelper.MidnightEstBlue;
+            colors.ControlHostBack = ColorHelper.MidnightEstBlue;
             colors.ControlHostFore = colors.Text;
 
             colors.RebuildAppearances();

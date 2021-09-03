@@ -1,61 +1,53 @@
 ﻿using SadConsole;
-using System;
 using Microsoft.Xna.Framework;
 using RogueGame.Components;
+using RogueGame.Entities;
 using RogueGame.GameSystems.Items;
+using RogueGame.Logging;
 using RogueGame.Maps;
+using SadConsole.Controls;
 using Console = SadConsole.Console;
 
 namespace RogueGame.Ui
 {
     public sealed class UiManager
     {
+        private readonly ILogManager _logManager;
+        
         public const string TileSetFontPath = "Fonts\\rus.font";
         public const string TileSetFontName = "rus";
 
-        public static Color MidnightEstBlue = new Color(3, 3, 15);
-        
         public int ViewPortWidth { get; } = 160; // 160 x 8 = 1280
         public int ViewPortHeight { get; } = 45; // 45 x 16 = 720
 
+        public UiManager()
+        {
+            _logManager = new LogManager();
+        }
+        
         public Console CreateMainMenu()
         {
             return new MainMenu(this);
         }
 
+        private IMenuProvider CreateMenuProvider()
+        {
+            var inventory = new InventoryWindow(120, 30);
+
+            return new MenuProvider(inventory);
+        }
+
         public ContainerConsole CreateMapScreen()
         {
-            const int leftPaneWidth = 30;
-            const int topPaneHeight = 3;
-            const int eventLogHeight = 4;
-
-            var leftPane = new Console(leftPaneWidth, ViewPortHeight);
-            leftPane.Fill(null, MidnightEstBlue, null);
-
-            var rightSectionWidth = ViewPortWidth - leftPaneWidth;
-
-            var topPane = new Console(rightSectionWidth, topPaneHeight);
-            topPane.Position = new Point(leftPaneWidth, 0);
-            topPane.Fill(null, MidnightEstBlue, null);
-            
-            var titleSetFont = Global.Fonts[TileSetFontName].GetFont(Font.FontSizes.One);
-            var tileSizeXFactor = titleSetFont.Size.X / Global.FontDefault.Size.X;
-            var mapConsole = new MapScreen(80, 45, rightSectionWidth/tileSizeXFactor, ViewPortHeight - eventLogHeight - topPaneHeight, titleSetFont);
-            mapConsole.Position = new Point(leftPaneWidth, topPaneHeight);
-            
-            var eventLog = new MessageLog(ViewPortWidth, eventLogHeight, Global.FontDefault);
-            eventLog.Position = new Point(leftPaneWidth, mapConsole.MapRenderer.ViewPort.Height + topPaneHeight);
-            mapConsole.Player.GetGoRogueComponent<IInventoryComponent>().Items.Add(new InventoryItem("trusty oak staff"));
-            eventLog.Add("Hello world!");
-            leftPane.Print(3,1, "Test dungeon");
-            
-            var screen = new ContainerConsole();
-            screen.Children.Add(leftPane);
-            screen.Children.Add(topPane);
-            screen.Children.Add(mapConsole);
-            screen.Children.Add(eventLog);
-
-            return screen;
+            var tileSetFont = Global.Fonts[TileSetFontName].GetFont(Font.FontSizes.One);
+            var entityFactory = new EntityFactory(tileSetFont, _logManager);
+            return new MapScreen(
+                ViewPortWidth, 
+                ViewPortHeight, 
+                tileSetFont,
+                CreateMenuProvider(),
+                entityFactory,
+                _logManager);
         }
     }
 }
