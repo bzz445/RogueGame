@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using GoRogue;
 using Microsoft.Xna.Framework;
 using SadConsole;
@@ -13,21 +14,24 @@ namespace RogueGame.Maps
         PLAYER
     }
 
-    internal class MovingCastlesMap : BasicMap
+    public class MovingCastlesMap : BasicMap
     {
+        private readonly Lazy<Player> _player;
+
+        public MovingCastlesMap(int width, int height)
+            : base(
+                width,
+                height,
+                Enum.GetNames(typeof(MapLayer)).Length - 1,
+                Distance.CHEBYSHEV,
+                entityLayersSupportingMultipleItems: LayerMasker.DEFAULT.Mask((int)MapLayer.ITEMS))
+        {
+            FovVisibilityHandler = new DefaultFOVVisibilityHandler(this, ColorAnsi.BlackBright);
+            _player = new Lazy<Player>(() => Entities.Items.OfType<Player>().First());
+        }
+
         public FOVVisibilityHandler FovVisibilityHandler { get; }
 
-        public new Player ControlledGameObject
-        {
-            get => (Player) base.ControlledGameObject;
-            set => base.ControlledGameObject = value;
-        }
-
-        public MovingCastlesMap(int width, int height) : base(width, height, Enum.GetNames(typeof(MapLayer)).Length - 1, Distance.CHEBYSHEV,
-            entityLayersSupportingMultipleItems: LayerMasker.DEFAULT.Mask((int) MapLayer.ITEMS))
-        {
-            ControlledGameObjectChanged += ControlledGameObjectTypeCheck<Player>;
-            FovVisibilityHandler = new DefaultFOVVisibilityHandler(this, ColorAnsi.BlackBright);
-        }
+        public Player Player => _player.Value;
     }
 }

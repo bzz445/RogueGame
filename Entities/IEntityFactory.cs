@@ -1,11 +1,13 @@
 using GoRogue;
+using RogueGame.GameSystems.Items;
 using SadConsole;
 
 namespace RogueGame.Entities
 {
     public interface IEntityFactory
     {
-        BasicEntity CreateActor(int glyph, Coord position, string name);
-        BasicEntity CreateItem(int glyph, Coord position, string name, string desc);
+        McEntity CreateActor(int glyph, Coord position, string name);
+        public McEntity CreateItem(Coord position, ItemTemplate itemTemplate);
+        Player CreatePlayer(Coord position);
     }
 }

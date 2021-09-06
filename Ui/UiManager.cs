@@ -37,16 +37,18 @@ namespace RogueGame.Ui
             return new MenuProvider(inventory);
         }
 
-        public ContainerConsole CreateMapScreen()
+        public ContainerConsole CreateMapScreen(IMapPlan mapPlan)
         {
             var tileSetFont = Global.Fonts[TileSetFontName].GetFont(Font.FontSizes.One);
             var entityFactory = new EntityFactory(tileSetFont, _logManager);
+            var mapFactory = new MapFactory(entityFactory);
             return new MapScreen(
                 ViewPortWidth, 
                 ViewPortHeight, 
                 tileSetFont,
                 CreateMenuProvider(),
-                entityFactory,
+                mapFactory,
+                mapPlan,
                 _logManager);
         }
     }

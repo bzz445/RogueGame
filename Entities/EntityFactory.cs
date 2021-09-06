@@ -1,60 +1,66 @@
 using GoRogue;
 using Microsoft.Xna.Framework;
 using RogueGame.Components;
+using RogueGame.Components.AiComponents;
 using RogueGame.GameSystems.Items;
 using RogueGame.Logging;
 using SadConsole;
 
 namespace RogueGame.Entities
 {
-    public class EntityFactory: IEntityFactory
+    public class EntityFactory : IEntityFactory
     {
         private readonly Font _font;
         private readonly ILogManager _logManager;
-        
+
         public EntityFactory(Font font, ILogManager logManager)
         {
             _font = font;
             _logManager = logManager;
         }
-        
-        public BasicEntity CreateActor(int glyph, Coord position, string name)
+
+        public McEntity CreateActor(int glyph, Coord position, string name)
         {
-            var actor = new BasicEntity(Color.White, Color.Transparent, glyph, position, (int)Maps.MapLayer.MONSTERS, isWalkable: false, isTransparent: true)
-            {
-                Name = name,
-            };
-            actor.AddGoRogueComponent(new HealthComponent(1));
+            var actor = new McEntity(name, Color.White, Color.Transparent, glyph, position, (int)Maps.MapLayer.MONSTERS, isWalkable: false, isTransparent: true);
+
+            actor.AddGoRogueComponent(new WalkAtPlayerAiComponent(6));
+            actor.AddGoRogueComponent(new MeleeAttackerComponent(5));
+            actor.AddGoRogueComponent(new HealthComponent(10));
             actor.AddGoRogueComponent(new SummaryControlComponent());
-            
+
+            // workaround Entity construction bugs by setting font afterward
             actor.Font = _font;
             actor.OnCalculateRenderPosition();
 
             return actor;
         }
 
-        public BasicEntity CreateItem(int glyph, Coord position, string name, string desc)
+        public McEntity CreateItem(Coord position, ItemTemplate itemTemplate)
         {
-            var item = new BasicEntity(
+            var item = new McEntity(
+                itemTemplate.Name,
                 Color.White,
                 Color.Transparent,
-                glyph,
+                itemTemplate.Glyph,
                 position,
                 (int)Maps.MapLayer.ITEMS,
                 isWalkable: true,
-                isTransparent: true)
-            {
-                Name = name,
-            };
+                isTransparent: true);
             item.AddGoRogueComponent(new SummaryControlComponent());
-            item.AddGoRogueComponent(new PickupableComponent(_logManager,
-                new InventoryItem(name, desc)));
+            item.AddGoRogueComponent(new PickupableComponent(
+                _logManager,
+                new InventoryItem(itemTemplate)));
 
             // workaround Entity construction bugs by setting font afterward
             item.Font = _font;
             item.OnCalculateRenderPosition();
 
             return item;
+        }
+        
+        public Player CreatePlayer(Coord position)
+        {
+            return new Player(position, _font);
         }
     }
 }

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using RogueGame.Components;
+using RogueGame.Consoles;
 using RogueGame.Entities;
+using RogueGame.GameSystems;
 using RogueGame.GameSystems.Items;
 using RogueGame.Logging;
 using RogueGame.Maps;
@@ -24,7 +26,8 @@ namespace RogueGame.Ui
             int height, 
             Font tileSetFont, 
             IMenuProvider menuProvider, 
-            IEntityFactory entityFactory,
+            IMapFactory mapFactory,
+            IMapPlan mapPlan,
             ILogManager logManager)
         {
             var rightSectionWidth = width - leftPaneWidth;
@@ -32,15 +35,16 @@ namespace RogueGame.Ui
             var topPane = new Console(rightSectionWidth, topPaneHeight);
             topPane.Position = new Point(leftPaneWidth, 0);
 
+            var game = new TurnBasedGame(logManager);
             var tileSizeXFactor = tileSetFont.Size.X / Global.FontDefault.Size.X;
+            var map = mapFactory.Create(80, 45, mapPlan);
             var mapConsole = new MapConsole(
-                80,
-                45,
                 rightSectionWidth / tileSizeXFactor,
                 height - eventLogHeight - topPaneHeight,
                 tileSetFont,
                 menuProvider,
-                entityFactory)
+                game,
+                map)
             {
                 Position = new Point(leftPaneWidth, topPaneHeight)
             };
@@ -51,7 +55,7 @@ namespace RogueGame.Ui
             {
                 Position = new Point(0, 4),
             };
-            manaBar.ThemeColors = ColorHelper.GetProgressBarThemeColors(Color.White, ColorHelper.ManaBlue);
+            manaBar.ThemeColors = ColorHelper.GetProgressBarThemeColors(ColorHelper.DepletedHealthRed, ColorHelper.ManaBlue);
             manaBar.Progress = 1;
 
             var healthComponent = mapConsole.Player.GetGoRogueComponent<IHealthComponent>();
@@ -59,7 +63,11 @@ namespace RogueGame.Ui
             {
                 Position = new Point(0, 3),
             };
-            healthBar.ThemeColors = ColorHelper.GetProgressBarThemeColors(Color.White, Color.DarkRed);
+            healthBar.ThemeColors = ColorHelper.GetProgressBarThemeColors(ColorHelper.DepletedHealthRed, ColorHelper.HealthRed);
+            mapConsole.Player.GetGoRogueComponent<IHealthComponent>().HealthChanged += (_, __) =>
+            {
+                healthBar.Progress = healthComponent.Health / healthComponent.MaxHealth;
+            };
             healthBar.Progress = healthComponent.Health / healthComponent.MaxHealth;
 
             _leftPane.Add(manaBar);
@@ -68,12 +76,8 @@ namespace RogueGame.Ui
             var eventLog = new MessageLog(width, eventLogHeight, Global.FontDefault);
             eventLog.Position = new Point(leftPaneWidth, mapConsole.MapRenderer.ViewPort.Height + topPaneHeight);
             logManager.RegisterEventListener(s => eventLog.Add(s));
+            logManager.RegisterDebugListener(s => eventLog.Add($"DEBUG: {s}")); // todo put debug logs somewhere else
             
-            // test data...
-            mapConsole.Player.GetGoRogueComponent<IInventoryComponent>().Items.Add(new InventoryItem(
-                "trusty oak staff",
-                "Cut from the woods of the Academy at Kurisau, this staff has served you since you first learned to sense the Wellspring."));
-            eventLog.Add("Find the tower's core.");
             _leftPane.Add(new Label("Vede of Tattersail") { Position = new Point(1, 0), TextColor = Color.Gainsboro });
             _leftPane.Add(new Label("Material Plane, Ayen") { Position = new Point(1, 1), TextColor = Color.DarkGray });
             _leftPane.Add(new Label("Old Alward's Tower") { Position = new Point(1, 2), TextColor = Color.DarkGray });

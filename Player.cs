@@ -1,18 +1,20 @@
 ﻿using GoRogue;
 using Microsoft.Xna.Framework;
 using RogueGame.Components;
+using RogueGame.Entities;
 using RogueGame.Fonts;
 using RogueGame.Maps;
 using SadConsole;
 
 namespace RogueGame
 {
-    internal class Player : BasicEntity
+    public sealed class Player : McEntity
     {
         public int FOVRadius;
 
         public Player(Coord position, Font font)
-            : base(Color.White,
+            : base("Player",
+                Color.White,
                 Color.Transparent,
                 SpriteAtlas.PlayerDefault,
                 position,
@@ -21,16 +23,12 @@ namespace RogueGame
                 isTransparent: true)
         {
             FOVRadius = 10;
-            Name = "Player";
             Font = font;
             OnCalculateRenderPosition();
-            AddGoRogueComponent(new HealthComponent(1));
+            
+            AddGoRogueComponent(new MeleeAttackerComponent(5));
+            AddGoRogueComponent(new HealthComponent(100));
             AddGoRogueComponent(new InventoryComponent());
-        }
-
-        public void Move(Direction direction)
-        {
-            Position += direction;
         }
     }
 }

@@ -1,11 +1,17 @@
+using GoRogue.GameFramework.Components;
+
 namespace RogueGame.Components
 {
-    public interface IHealthComponent
+    public interface IHealthComponent: IGameObjectComponent
     {
-        int Health { get; }
-        int MaxHealth { get; }
+        event System.EventHandler<float> HealthChanged;
+        
+        float Health { get; }
+        float MaxHealth { get; }
 
-        void ApplyDamage(int damage);
-        void ApplyHealing(int healing);
+        bool Dead { get; }
+        
+        void ApplyDamage(float damage);
+        void ApplyHealing(float healing);
     }
 }

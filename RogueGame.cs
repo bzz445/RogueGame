@@ -1,5 +1,8 @@
 ﻿using SadConsole;
 using System;
+using System.Linq;
+using RogueGame.GameSystems.Items;
+using RogueGame.Maps;
 using RogueGame.Ui;
 
 namespace RogueGame
@@ -36,8 +39,17 @@ namespace RogueGame
 
             InitColors();
 
+            // gonna put these in a game manager
+            var itemLoader = new ItemTemplateLoader();
+            var items = itemLoader.Load();
+
+            var mapLoader = new MapTemplateLoader();
+            var mapTemplate = mapLoader.Load();
+            var mapPlanFactory = new MapPlanFactory();
+            var maps = mapTemplate.ToDictionary(t => t.Key, t => mapPlanFactory.Create(t.Value, items));
+            
             //Global.CurrentScreen = _uiManager.CreateMainMenu();
-            Global.CurrentScreen = _uiManager.CreateMapScreen();
+            Global.CurrentScreen = _uiManager.CreateMapScreen(maps["MAP_TESTAREA"]);
         }
 
         private void InitColors()

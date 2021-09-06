@@ -40,6 +40,14 @@
     </Content>
     <None Remove="Fonts\IBM.font" />
     <None Remove="Fonts\IBM8x16.png" />
+    <None Remove="Content\ItemTemplates.xml" />
+    <Content Include="Content\ItemTemplates.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Content\MapTemplates.xml" />
+    <Content Include="Content\MapTemplates.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

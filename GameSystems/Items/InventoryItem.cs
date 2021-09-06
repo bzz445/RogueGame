@@ -2,12 +2,14 @@ namespace RogueGame.GameSystems.Items
 {
     public class InventoryItem: IInventoryItem
     {
-        public InventoryItem(string name, string description)
+        private readonly ItemTemplate _itemTemplate;
+        
+        public InventoryItem(ItemTemplate itemTemplate)
         {
-            Name = name;
-            Description = description;
-        } 
-        public string Name { get; }
-        public string Description { get; }
+            _itemTemplate = itemTemplate;
+        }
+
+        public string Name => _itemTemplate.Name;
+        public string Description => _itemTemplate.Description;
     }
 }
