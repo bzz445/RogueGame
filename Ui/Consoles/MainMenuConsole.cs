@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
+using RogueGame.GameSystems;
 using SadConsole;
-using SadConsole.Themes;
 
-namespace RogueGame.Ui
+namespace RogueGame.Ui.Consoles
 {
-    public sealed class MainMenu : ContainerConsole
+    public sealed class MainMenuConsole : ContainerConsole
     {
-        public MainMenu(UiManager uiManager)
+        public MainMenuConsole(IGameManager gameManager)
         {
             DefaultBackground = Color.Black;
 
@@ -36,8 +36,7 @@ namespace RogueGame.Ui
                 Position = new Point(66, 10),
             };
             
-            // todo: gonna have to call into that game manager instead
-            //newGameButton.Click += (_, __) => Global.CurrentScreen = uiManager.CreateMapScreen();
+            newGameButton.Click += (_, __) => gameManager.Start();
             menuConsole.Add(newGameButton);
 
             var exitButton = new SadConsole.Controls.Button(30, 1)

@@ -1,7 +1,7 @@
 using RogueGame.Entities;
 using RogueGame.Maps;
 
-namespace RogueGame.GameSystems
+namespace RogueGame.GameSystems.TurnBasedGame
 {
     public interface ITurnBasedGame
     {

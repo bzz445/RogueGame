@@ -2,26 +2,21 @@
 using System.Linq;
 using GoRogue;
 using GoRogue.GameFramework;
-using GoRogue.MapGeneration;
-using GoRogue.MapViews;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using RogueGame.Components;
 using RogueGame.Entities;
-using RogueGame.Fonts;
-using RogueGame.GameSystems;
-using RogueGame.Logging;
+using RogueGame.GameSystems.TurnBasedGame;
 using RogueGame.Maps;
-using RogueGame.Ui;
 using SadConsole;
 using SadConsole.Input;
 using XnaRect = Microsoft.Xna.Framework.Rectangle;
 
-namespace RogueGame.Consoles
+namespace RogueGame.Ui.Consoles
 {
     internal class MapConsole : ContainerConsole
     {
-        private readonly IMenuProvider _menuProvider;
+        private readonly IMapModeMenuProvider _menuProvider;
         private readonly Console _mouseHighlight;
         private readonly ITurnBasedGame _game;
 
@@ -39,7 +34,7 @@ namespace RogueGame.Consoles
             int viewportWidth,
             int viewportHeight,
             Font tilesetFont,
-            IMenuProvider menuProvider,
+            IMapModeMenuProvider menuProvider,
             ITurnBasedGame game,
             MovingCastlesMap map)
         {
@@ -59,6 +54,7 @@ namespace RogueGame.Consoles
                 {
                     Player = player;
                     _game.RegisterPlayer(player);
+                    player.RemovedFromMap += Player_RemovedFromMap;
                     Player.Moved += Player_Moved;
                     continue;
                 }
@@ -79,8 +75,17 @@ namespace RogueGame.Consoles
             Children.Add(_mouseHighlight);
         }
 
+        private void Player_RemovedFromMap(object sender, System.EventArgs e)
+        {
+            _menuProvider.Death.Show("You died.");
+        }
+        
         public override bool ProcessKeyboard(SadConsole.Input.Keyboard info)
         {
+            if (!Player.HasMap)
+            {
+                return base.ProcessKeyboard(info);
+            }
             if (info.IsKeyPressed(Keys.I))
             {
                 _menuProvider.Inventory.Show(Player.GetGoRogueComponent<IInventoryComponent>());
@@ -98,6 +103,10 @@ namespace RogueGame.Consoles
 
         public override bool ProcessMouse(MouseConsoleState state)
         {
+            if (!Player.HasMap)
+            {
+                return base.ProcessMouse(state);
+            }
             var mapState = new MouseConsoleState(MapRenderer, state.Mouse);
 
             var mapCoord = new Coord(

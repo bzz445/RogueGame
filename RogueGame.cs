@@ -1,6 +1,7 @@
 ﻿using SadConsole;
 using System;
 using System.Linq;
+using RogueGame.GameSystems;
 using RogueGame.GameSystems.Items;
 using RogueGame.Maps;
 using RogueGame.Ui;
@@ -9,13 +10,15 @@ namespace RogueGame
 {
     internal sealed class RogueGame : IDisposable
     {
-        private readonly UiManager _uiManager;
-
+        private readonly IUiManager _uiManager;
+        private readonly IGameManager _gameManager;
+        
         private bool disposedValue;
 
-        public RogueGame()
+        public RogueGame(IUiManager uiManager, IGameManager gameManager)
         {
-            _uiManager = new UiManager();
+            _uiManager = uiManager;
+            _gameManager = gameManager;
         }
 
         public void Run()
@@ -38,18 +41,8 @@ namespace RogueGame
             Global.LoadFont(UiManager.TileSetFontPath);
 
             InitColors();
-
-            // gonna put these in a game manager
-            var itemLoader = new ItemTemplateLoader();
-            var items = itemLoader.Load();
-
-            var mapLoader = new MapTemplateLoader();
-            var mapTemplate = mapLoader.Load();
-            var mapPlanFactory = new MapPlanFactory();
-            var maps = mapTemplate.ToDictionary(t => t.Key, t => mapPlanFactory.Create(t.Value, items));
             
-            //Global.CurrentScreen = _uiManager.CreateMainMenu();
-            Global.CurrentScreen = _uiManager.CreateMapScreen(maps["MAP_TESTAREA"]);
+            _uiManager.ShowMainMenu(_gameManager);
         }
 
         private void InitColors()

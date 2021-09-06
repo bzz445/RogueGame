@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using GoRogue;
@@ -6,14 +5,12 @@ using GoRogue.GameFramework;
 using Microsoft.Xna.Framework.Input;
 using RogueGame.Components;
 using RogueGame.Components.AiComponents;
-using RogueGame.Consoles;
 using RogueGame.Entities;
 using RogueGame.Logging;
 using RogueGame.Maps;
 using SadConsole;
-using Keyboard = SadConsole.Input.Keyboard;
 
-namespace RogueGame.GameSystems
+namespace RogueGame.GameSystems.TurnBasedGame
 {
     public enum State
     {
@@ -90,6 +87,11 @@ namespace RogueGame.GameSystems
         {
             foreach (var entity in Map.Entities.Items.OfType<McEntity>().ToList())
             {
+                if (!_player.HasMap)
+                {
+                    break;
+                }
+                
                 if (entity.CurrentMap != Map)
                 {
                     continue;

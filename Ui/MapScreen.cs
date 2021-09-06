@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using RogueGame.Components;
-using RogueGame.Consoles;
 using RogueGame.Entities;
 using RogueGame.GameSystems;
 using RogueGame.GameSystems.Items;
+using RogueGame.GameSystems.TurnBasedGame;
 using RogueGame.Logging;
 using RogueGame.Maps;
+using RogueGame.Ui.Consoles;
 using SadConsole;
 using SadConsole.Controls;
 
@@ -25,7 +26,7 @@ namespace RogueGame.Ui
             int width, 
             int height, 
             Font tileSetFont, 
-            IMenuProvider menuProvider, 
+            IMapModeMenuProvider menuProvider, 
             IMapFactory mapFactory,
             IMapPlan mapPlan,
             ILogManager logManager)

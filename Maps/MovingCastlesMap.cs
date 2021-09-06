@@ -2,6 +2,7 @@
 using System.Linq;
 using GoRogue;
 using Microsoft.Xna.Framework;
+using RogueGame.Entities;
 using SadConsole;
 
 namespace RogueGame.Maps

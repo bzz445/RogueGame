@@ -1,10 +1,13 @@
-﻿namespace RogueGame
+﻿using Autofac;
+
+namespace RogueGame
 {
     internal static class Program
     {
         private static void Main()
         {
-            using var game = new RogueGame();
+            var container = AutofacSetup.CreateContainer();
+            using var game = container.Resolve<RogueGame>();
             game.Run();
         }
     }

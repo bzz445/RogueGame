@@ -4,7 +4,7 @@ using SadConsole;
 using SadConsole.Controls;
 using SadConsole.Input;
 
-namespace RogueGame.Consoles
+namespace RogueGame.Ui.Consoles
 {
     public class ScrollableTextBoxConsole : ScrollingConsole
     {
@@ -63,7 +63,7 @@ namespace RogueGame.Consoles
                     ScrollOffset += TimesShiftedUp != 0 ? TimesShiftedUp : 1;
                 }
 
-                _scrollBar.Maximum = (Height + ScrollOffset) - Height;
+                _scrollBar.Maximum = Height + ScrollOffset - Height;
 
                 // This will follow the cursor since we move the render area in the event.
                 _scrollBar.Value = ScrollOffset;

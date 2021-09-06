@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SadConsole;
 
-namespace RogueGame.Consoles
+namespace RogueGame.Ui.Consoles
 {
     public class ConsoleListEventArgs: System.EventArgs
     {

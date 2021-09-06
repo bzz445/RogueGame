@@ -1,16 +1,14 @@
 ﻿using SadConsole;
-using Microsoft.Xna.Framework;
-using RogueGame.Components;
 using RogueGame.Entities;
-using RogueGame.GameSystems.Items;
+using RogueGame.GameSystems;
 using RogueGame.Logging;
 using RogueGame.Maps;
-using SadConsole.Controls;
-using Console = SadConsole.Console;
+using RogueGame.Ui.Consoles;
+using RogueGame.Ui.Windows;
 
 namespace RogueGame.Ui
 {
-    public sealed class UiManager
+    public sealed class UiManager: IUiManager
     {
         private readonly ILogManager _logManager;
         
@@ -24,20 +22,15 @@ namespace RogueGame.Ui
         {
             _logManager = new LogManager();
         }
+
+        public void ShowMainMenu(IGameManager gameManager)
+        {
+            var menu = new MainMenuConsole(gameManager);
+            Global.CurrentScreen = menu;
+            menu.IsFocused = true;
+        }
         
-        public Console CreateMainMenu()
-        {
-            return new MainMenu(this);
-        }
-
-        private IMenuProvider CreateMenuProvider()
-        {
-            var inventory = new InventoryWindow(120, 30);
-
-            return new MenuProvider(inventory);
-        }
-
-        public ContainerConsole CreateMapScreen(IMapPlan mapPlan)
+        public ContainerConsole CreateMapScreen(IMapPlan mapPlan, IGameManager gameManager)
         {
             var tileSetFont = Global.Fonts[TileSetFontName].GetFont(Font.FontSizes.One);
             var entityFactory = new EntityFactory(tileSetFont, _logManager);
@@ -46,10 +39,17 @@ namespace RogueGame.Ui
                 ViewPortWidth, 
                 ViewPortHeight, 
                 tileSetFont,
-                CreateMenuProvider(),
+                CreateMenuProvider(gameManager),
                 mapFactory,
                 mapPlan,
                 _logManager);
+        }
+        
+        private IMapModeMenuProvider CreateMenuProvider(IGameManager gameManager)
+        {
+            var inventory = new InventoryWindow(120, 30);
+            var death = new DeathWindow(this, gameManager);
+            return new MenuProvider(inventory, death);
         }
     }
 }

@@ -9,7 +9,7 @@ using SadConsole;
 using SadConsole.Controls;
 using Console = SadConsole.Console;
 
-namespace RogueGame.Ui
+namespace RogueGame.Ui.Windows
 {
     public class InventoryWindow : Window
     {
@@ -21,8 +21,8 @@ namespace RogueGame.Ui
 
         public InventoryWindow(int width, int height) : base(width, height)
         {
-            Contract.Requires(width > 40, "Menu width must be > 200");
-            Contract.Requires(width > 10, "Menu width must be > 100");
+            Contract.Requires(width > 40, "Menu width must be > 40");
+            Contract.Requires(width > 10, "Menu width must be > 10");
 
             _itemButtomWidth = width / 3;
             CloseOnEscKey = true;
@@ -79,7 +79,7 @@ namespace RogueGame.Ui
             {
                 var itemButton = new Button(_itemButtomWidth - 1)
                 {
-                    Text = TruncateName(i.Name, _itemButtomWidth - 5),
+                    Text = TextHelper.TruncateString(i.Name, _itemButtomWidth - 5),
                     Position = new Point(0, yCount++),
                 };
                 itemButton.Click += (_, __) => _selectedItem = i;
@@ -98,16 +98,6 @@ namespace RogueGame.Ui
             {
                 Add(control);
             }
-        }
-
-        private string TruncateName(string name, int maxLen)
-        {
-            if (name.Length > maxLen)
-            {
-                return name.Substring(0, maxLen - 3) + "...";
-            }
-
-            return name;
         }
     }
 }

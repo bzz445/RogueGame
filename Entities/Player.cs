@@ -1,12 +1,11 @@
 ﻿using GoRogue;
 using Microsoft.Xna.Framework;
 using RogueGame.Components;
-using RogueGame.Entities;
 using RogueGame.Fonts;
 using RogueGame.Maps;
 using SadConsole;
 
-namespace RogueGame
+namespace RogueGame.Entities
 {
     public sealed class Player : McEntity
     {

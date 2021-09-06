@@ -1,15 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "t/oiGVPlCBQNfOtFoyHu3cEeZDu8YLg9jSEUvMwRBOgK7+74OfJgVPmLm1bT+FDkCUAqXYoRMjrn+KXcs2e5hQ==",
+  "dgSpecHash": "nxGzASmpoN0+zMHp4pHK2KzVLGlKuJ2Sr6Q62O9b0GMxLicr2uXeJF0KUSNbXvk/nttmsBhAy6c136en7EJITA==",
   "success": true,
   "projectFilePath": "D:\\Projects\\Games\\RogueGame\\RogueGame.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\pav44\\.nuget\\packages\\autofac\\6.2.0\\autofac.6.2.0.nupkg.sha512",
     "C:\\Users\\pav44\\.nuget\\packages\\gorogue\\2.6.4\\gorogue.2.6.4.nupkg.sha512",
     "C:\\Users\\pav44\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.0.1641\\monogame.framework.desktopgl.3.8.0.1641.nupkg.sha512",
     "C:\\Users\\pav44\\.nuget\\packages\\newtonsoft.json\\11.0.2\\newtonsoft.json.11.0.2.nupkg.sha512",
     "C:\\Users\\pav44\\.nuget\\packages\\optimizedpriorityqueue\\4.2.0\\optimizedpriorityqueue.4.2.0.nupkg.sha512",
     "C:\\Users\\pav44\\.nuget\\packages\\sadconsole\\8.99.3\\sadconsole.8.99.3.nupkg.sha512",
     "C:\\Users\\pav44\\.nuget\\packages\\sadconsole.goroguehelpers\\1.0.1\\sadconsole.goroguehelpers.1.0.1.nupkg.sha512",
+    "C:\\Users\\pav44\\.nuget\\packages\\system.diagnostics.diagnosticsource\\4.7.1\\system.diagnostics.diagnosticsource.4.7.1.nupkg.sha512",
     "C:\\Users\\pav44\\.nuget\\packages\\troschuetz.random\\4.4.0\\troschuetz.random.4.4.0.nupkg.sha512"
   ],
   "logs": []

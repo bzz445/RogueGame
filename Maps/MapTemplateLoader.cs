@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace RogueGame.Maps
 {
-    public class MapTemplateLoader
+    public class MapTemplateLoader: IMapTemplateLoader
     {
         private const string MapTemplateXml = "Content\\MapTemplates.xml";
 
