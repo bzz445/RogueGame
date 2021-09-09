@@ -9,5 +9,6 @@ namespace RogueGame.Entities
         McEntity CreateActor(int glyph, Coord position, string name);
         public McEntity CreateItem(Coord position, ItemTemplate itemTemplate);
         Player CreatePlayer(Coord position);
+        Castle CreateCastle(Coord position);
     }
 }

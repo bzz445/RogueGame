@@ -22,27 +22,27 @@ namespace RogueGame.Ui.Consoles
                 Position = new Point(0, 12)
             };
 
-            var continueButton = new SadConsole.Controls.Button(30, 1)
+            var continueButton = new SadConsole.Controls.Button(25, 1)
             {
-                Text = "Continue",
-                Position = new Point(66, 8),
-                IsEnabled = false,
+                Text = "Dungeon mode testarea",
+                Position = new Point(76, 8),
             };
+            continueButton.Click += (_, __) => gameManager.StartDungeonModeDemo();
             menuConsole.Add(continueButton);
 
-            var newGameButton = new SadConsole.Controls.Button(30, 1)
+            var newGameButton = new SadConsole.Controls.Button(25, 1)
             {
-                Text = "New game",
-                Position = new Point(66, 10),
+                Text = "Castle mode testarea",
+                Position = new Point(76, 10),
             };
             
-            newGameButton.Click += (_, __) => gameManager.Start();
+            newGameButton.Click += (_, __) => gameManager.StartCastleModeDemo();
             menuConsole.Add(newGameButton);
 
-            var exitButton = new SadConsole.Controls.Button(30, 1)
+            var exitButton = new SadConsole.Controls.Button(25, 1)
             {
                 Text = "Exit",
-                Position = new Point(66, 12),
+                Position = new Point(76, 12),
             };
             exitButton.Click += (_, __) => SadConsole.Game.Instance.Exit();
             menuConsole.Add(exitButton);

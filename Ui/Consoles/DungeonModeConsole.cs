@@ -1,28 +1,24 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using RogueGame.Components;
-using RogueGame.Entities;
-using RogueGame.GameSystems;
-using RogueGame.GameSystems.Items;
 using RogueGame.GameSystems.TurnBasedGame;
 using RogueGame.Logging;
 using RogueGame.Maps;
-using RogueGame.Ui.Consoles;
 using SadConsole;
 using SadConsole.Controls;
 
-namespace RogueGame.Ui
+namespace RogueGame.Ui.Consoles
 {
-    public class MapScreen : ContainerConsole
+    public class DungeonModeConsole : ContainerConsole
     {
-        private const int leftPaneWidth = 30;
-        private const int topPaneHeight = 3;
-        private const int eventLogHeight = 4;
+        private const int LeftPaneWidth = 30;
+        private const int TopPaneHeight = 3;
+        private const int EventLogHeight = 4;
 
         private readonly ControlsConsole _leftPane;
         private List<Console> _entitySummaryConsoles;
         
-        public MapScreen(
+        public DungeonModeConsole(
             int width, 
             int height, 
             Font tileSetFont, 
@@ -31,27 +27,27 @@ namespace RogueGame.Ui
             IMapPlan mapPlan,
             ILogManager logManager)
         {
-            var rightSectionWidth = width - leftPaneWidth;
+            var rightSectionWidth = width - LeftPaneWidth;
 
-            var topPane = new Console(rightSectionWidth, topPaneHeight);
-            topPane.Position = new Point(leftPaneWidth, 0);
+            var topPane = new Console(rightSectionWidth, TopPaneHeight);
+            topPane.Position = new Point(LeftPaneWidth, 0);
 
             var game = new TurnBasedGame(logManager);
             var tileSizeXFactor = tileSetFont.Size.X / Global.FontDefault.Size.X;
-            var map = mapFactory.Create(80, 45, mapPlan);
-            var mapConsole = new MapConsole(
+            var map = mapFactory.CreateDungeonMap(80, 45, mapPlan);
+            var mapConsole = new DungeonMapConsole(
                 rightSectionWidth / tileSizeXFactor,
-                height - eventLogHeight - topPaneHeight,
+                height - EventLogHeight - TopPaneHeight,
                 tileSetFont,
                 menuProvider,
                 game,
                 map)
             {
-                Position = new Point(leftPaneWidth, topPaneHeight)
+                Position = new Point(LeftPaneWidth, TopPaneHeight)
             };
             mapConsole.SummaryConsolesChanged += (_, args) => HandleNewSummaryConsoles(args.Consoles);
             
-            _leftPane = new ControlsConsole(leftPaneWidth, height);
+            _leftPane = new ControlsConsole(LeftPaneWidth, height);
             var manaBar = new ProgressBar(30, 1, HorizontalAlignment.Left)
             {
                 Position = new Point(0, 4),
@@ -74,8 +70,8 @@ namespace RogueGame.Ui
             _leftPane.Add(manaBar);
             _leftPane.Add(healthBar);
             
-            var eventLog = new MessageLog(width, eventLogHeight, Global.FontDefault);
-            eventLog.Position = new Point(leftPaneWidth, mapConsole.MapRenderer.ViewPort.Height + topPaneHeight);
+            var eventLog = new MessageLogConsole(width, EventLogHeight, Global.FontDefault);
+            eventLog.Position = new Point(LeftPaneWidth, mapConsole.MapRenderer.ViewPort.Height + TopPaneHeight);
             logManager.RegisterEventListener(s => eventLog.Add(s));
             logManager.RegisterDebugListener(s => eventLog.Add($"DEBUG: {s}")); // todo put debug logs somewhere else
             

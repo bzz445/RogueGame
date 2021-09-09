@@ -2,9 +2,9 @@ using RogueGame.Ui.Windows;
 
 namespace RogueGame.Ui
 {
-    public class MenuProvider : IMapModeMenuProvider
+    public class MapModeMenuProvider : IMapModeMenuProvider
     {
-        public MenuProvider(InventoryWindow inventory,
+        public MapModeMenuProvider(InventoryWindow inventory,
             DeathWindow death)
         {
             Inventory = inventory;

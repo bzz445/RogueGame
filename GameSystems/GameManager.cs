@@ -21,8 +21,7 @@ namespace RogueGame.GameSystems
             _itemLoader = itemLoader;
             _mapLoader = mapLoader;
         }
-
-        public void Start()
+        public void StartDungeonModeDemo()
         {
             var items = _itemLoader.Load();
 
@@ -30,7 +29,18 @@ namespace RogueGame.GameSystems
             var mapPlanFactory = new MapPlanFactory();
             var maps = mapTemplates.ToDictionary(t => t.Key, t => mapPlanFactory.Create(t.Value, items));
 
-            Global.CurrentScreen = _uiManager.CreateMapScreen(maps["MAP_TESTAREA"], this);
+            Global.CurrentScreen = _uiManager.CreateDungeonMapScreen(maps["MAP_TESTAREA"], this);
+        }
+        
+        public void StartCastleModeDemo()
+        {
+            var items = _itemLoader.Load();
+
+            var mapTemplates = _mapLoader.Load();
+            var mapPlanFactory = new MapPlanFactory();
+            var maps = mapTemplates.ToDictionary(t => t.Key, t => mapPlanFactory.Create(t.Value, items));
+
+            Global.CurrentScreen = _uiManager.CreateCastleMapScreen(maps["MAP_TESTAREA"], this);
         }
     }
 }

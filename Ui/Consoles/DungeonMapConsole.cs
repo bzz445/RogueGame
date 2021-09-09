@@ -14,7 +14,7 @@ using XnaRect = Microsoft.Xna.Framework.Rectangle;
 
 namespace RogueGame.Ui.Consoles
 {
-    internal class MapConsole : ContainerConsole
+    internal class DungeonMapConsole : ContainerConsole
     {
         private readonly IMapModeMenuProvider _menuProvider;
         private readonly Console _mouseHighlight;
@@ -24,19 +24,19 @@ namespace RogueGame.Ui.Consoles
 
         public event System.EventHandler<ConsoleListEventArgs> SummaryConsolesChanged;
 
-        public MovingCastlesMap Map { get; }
+        public DungeonMap Map { get; }
 
         public ScrollingConsole MapRenderer { get; }
 
         public Player Player { get; }
 
-        public MapConsole(
+        public DungeonMapConsole(
             int viewportWidth,
             int viewportHeight,
             Font tilesetFont,
             IMapModeMenuProvider menuProvider,
             ITurnBasedGame game,
-            MovingCastlesMap map)
+            DungeonMap map)
         {
             _menuProvider = menuProvider;
             _game = game;

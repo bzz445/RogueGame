@@ -1,19 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using SadConsole;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace RogueGame.Ui
+namespace RogueGame.Ui.Consoles
 {
-    public class MessageLog : ContainerConsole
+    public class MessageLogConsole : ContainerConsole
     {
         private const int _maxLines = 50;
 
         private readonly Queue<string> _lines;
         private readonly ScrollingConsole _messageConsole;
 
-        public MessageLog(int width, int height, Font font)
+        public MessageLogConsole(int width, int height, Font font)
         {
             _lines = new Queue<string>();
             _messageConsole = new ScrollingConsole(width, height, font);
@@ -31,7 +29,7 @@ namespace RogueGame.Ui
 
             _messageConsole.Cursor.Position = new Point(1, _lines.Count - 1);
 
-            var coloredMessage = new ColoredString(message + "\n", new Cell(Color.Gainsboro, ColorHelper.MidnightEstBlue));
+            var coloredMessage = new ColoredString($"> {message}\n", new Cell(Color.Gainsboro, ColorHelper.MidnightEstBlue));
             _messageConsole.Cursor.Print(coloredMessage);
         }
     }
