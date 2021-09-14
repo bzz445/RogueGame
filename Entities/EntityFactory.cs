@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using RogueGame.Components;
 using RogueGame.Components.AiComponents;
 using RogueGame.GameSystems.Items;
+using RogueGame.GameSystems.Player;
 using RogueGame.Logging;
 using SadConsole;
 
@@ -19,13 +20,20 @@ namespace RogueGame.Entities
             _logManager = logManager;
         }
 
-        public McEntity CreateActor(int glyph, Coord position, string name)
+        public McEntity CreateActor(Coord position, ActorTemplate actorTemplate)
         {
-            var actor = new McEntity(name, Color.White, Color.Transparent, glyph, position, (int)Maps.DungeonMapLayer.MONSTERS, isWalkable: false, isTransparent: true);
+            var actor = new McEntity(
+                actorTemplate.Name,
+                Color.White,
+                Color.Transparent,
+                actorTemplate.Glyph,
+                position,
+                (int)Maps.DungeonMapLayer.MONSTERS,
+                isWalkable: false,
+                isTransparent: true,
+                actorTemplate.NameColor);
 
-            actor.AddGoRogueComponent(new WalkAtPlayerAiComponent(6));
-            actor.AddGoRogueComponent(new MeleeAttackerComponent(5));
-            actor.AddGoRogueComponent(new HealthComponent(10));
+            actorTemplate.CreateComponents().ForEach(c => actor.AddGoRogueComponent(c));
             actor.AddGoRogueComponent(new SummaryControlComponent());
 
             // workaround Entity construction bugs by setting font afterward
@@ -45,11 +53,12 @@ namespace RogueGame.Entities
                 position,
                 (int)Maps.DungeonMapLayer.ITEMS,
                 isWalkable: true,
-                isTransparent: true);
+                isTransparent: true,
+                Color.DarkGray);
             item.AddGoRogueComponent(new SummaryControlComponent());
             item.AddGoRogueComponent(new PickupableComponent(
                 _logManager,
-                new InventoryItem(itemTemplate)));
+                itemTemplate));
 
             // workaround Entity construction bugs by setting font afterward
             item.Font = _font;
@@ -58,14 +67,14 @@ namespace RogueGame.Entities
             return item;
         }
         
-        public Player CreatePlayer(Coord position)
+        public Wizard CreatePlayer(Coord position, Player playerInfo)
         {
-            return new Player(position, _font);
+            return new Wizard(position, playerInfo, _font);
         }
 
-        public Castle CreateCastle(Coord position)
+        public Castle CreateCastle(Coord position, Player playerInfo)
         {
-            return new Castle(position, _font);
+            return new Castle(position, playerInfo, _font);
         }
     }
 }

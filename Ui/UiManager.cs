@@ -1,6 +1,8 @@
 ﻿using SadConsole;
 using RogueGame.Entities;
 using RogueGame.GameSystems;
+using RogueGame.GameSystems.Player;
+using RogueGame.GameSystems.TurnBasedGame;
 using RogueGame.Logging;
 using RogueGame.Maps;
 using RogueGame.Ui.Consoles;
@@ -35,6 +37,7 @@ namespace RogueGame.Ui
             var tilesetFont = Global.Fonts[TileSetFontName].GetFont(Font.FontSizes.One);
             var entityFactory = new EntityFactory(tilesetFont, _logManager);
             var mapFactory = new MapFactory(entityFactory);
+            var game = new TurnBasedGame(_logManager);
             return new DungeonModeConsole(
                 ViewPortWidth,
                 ViewPortHeight,
@@ -42,12 +45,14 @@ namespace RogueGame.Ui
                 CreateMenuProvider(gameManager),
                 mapFactory,
                 mapPlan,
-                _logManager);
+                _logManager,
+                game,
+                Player.CreateDefault());
         }
 
         public CastleModeConsole CreateCastleMapScreen(IMapPlan mapPlan, IGameManager gameManager)
         {
-            var tilesetFont = Global.Fonts[TileSetFontName].GetFont(Font.FontSizes.One);
+            var tilesetFont = Global.Fonts[TileSetFontName].GetFont(Font.FontSizes.Three);
             var entityFactory = new EntityFactory(tilesetFont, _logManager);
             var mapFactory = new MapFactory(entityFactory);
             return new CastleModeConsole(
@@ -57,15 +62,17 @@ namespace RogueGame.Ui
                 CreateMenuProvider(gameManager),
                 mapFactory,
                 mapPlan,
-                _logManager);
+                _logManager,
+                Player.CreateDefault());
         }
 
         private IMapModeMenuProvider CreateMenuProvider(IGameManager gameManager)
         {
             var inventory = new InventoryWindow(120, 30);
             var death = new DeathWindow(this, gameManager);
-
-            return new MapModeMenuProvider(inventory, death);
+            var pop = new PopupMenuWindow(this, gameManager);
+            
+            return new MapModeMenuProvider(inventory, death, pop);
         }
     }
 }

@@ -2,32 +2,35 @@
 using Microsoft.Xna.Framework;
 using RogueGame.Components;
 using RogueGame.Fonts;
+using RogueGame.GameSystems.Player;
 using RogueGame.Maps;
+using RogueGame.Ui;
 using SadConsole;
 
 namespace RogueGame.Entities
 {
-    public sealed class Player : McEntity
+    public sealed class Wizard : McEntity
     {
         public int FOVRadius;
 
-        public Player(Coord position, Font font)
-            : base("Player",
+        public Wizard(Coord position, Player playerInfo, Font font)
+            : base(playerInfo.Name,
                 Color.White,
                 Color.Transparent,
                 SpriteAtlas.PlayerDefault,
                 position,
                 (int) DungeonMapLayer.PLAYER,
                 isWalkable: false,
-                isTransparent: true)
+                isTransparent: true,
+                ColorHelper.PlayerBlue)
         {
             FOVRadius = 10;
             Font = font;
             OnCalculateRenderPosition();
             
             AddGoRogueComponent(new MeleeAttackerComponent(5));
-            AddGoRogueComponent(new HealthComponent(100));
-            AddGoRogueComponent(new InventoryComponent());
+            AddGoRogueComponent(new HealthComponent(playerInfo.MaxHealth, playerInfo.Health));
+            AddGoRogueComponent(new InventoryComponent(playerInfo.Items.ToArray()));
         }
     }
 }

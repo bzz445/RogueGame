@@ -7,6 +7,6 @@ namespace RogueGame.Components
 {
     public interface IPickupableComponent: IStepTriggeredComponent
     {
-        List<IInventoryItem> Items { get; }
+        List<ItemTemplate> Items { get; }
     }
 }

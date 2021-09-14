@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using RogueGame.Components;
 using RogueGame.Entities;
+using RogueGame.GameSystems.Player;
 using RogueGame.GameSystems.TurnBasedGame;
 using RogueGame.Maps;
 using SadConsole;
@@ -28,7 +29,7 @@ namespace RogueGame.Ui.Consoles
 
         public ScrollingConsole MapRenderer { get; }
 
-        public Player Player { get; }
+        public Wizard Player { get; }
 
         public DungeonMapConsole(
             int viewportWidth,
@@ -50,7 +51,7 @@ namespace RogueGame.Ui.Consoles
 
             foreach (var entity in map.Entities.Items.OfType<McEntity>())
             {
-                if (entity is Player player)
+                if (entity is Wizard player)
                 {
                     Player = player;
                     _game.RegisterPlayer(player);
@@ -86,19 +87,18 @@ namespace RogueGame.Ui.Consoles
             {
                 return base.ProcessKeyboard(info);
             }
-            if (info.IsKeyPressed(Keys.I))
-            {
-                _menuProvider.Inventory.Show(Player.GetGoRogueComponent<IInventoryComponent>());
-                return true;
-            }
 
-            if (_game.HandleAsPlayerInput(info))
+            switch (_game.State)
             {
-                _lastSummaryConsolePosition = default;
-                return true;
+                case State.PlayerTurn:
+                    return PlayerTurnProcessKeyboard(info);
+                case State.Processing:
+                    return base.ProcessKeyboard(info);
+                case State.Targetting:
+                    return TargettingProcessKeyboard(info);
+                default:
+                    return base.ProcessKeyboard(info);
             }
-
-            return base.ProcessKeyboard(info);
         }
 
         public override bool ProcessMouse(MouseConsoleState state)
@@ -120,6 +120,7 @@ namespace RogueGame.Ui.Consoles
                 && _lastSummaryConsolePosition != mapState.ConsoleCellPosition
                 && Map.FOV.CurrentFOV.Contains(mapCoord))
             {
+                // update summaries
                 var summaryControls = new List<Console>();
                 foreach (var entity in Map.GetEntities<BasicEntity>(mapCoord))
                 {
@@ -131,12 +132,71 @@ namespace RogueGame.Ui.Consoles
                 }
 
                 _lastSummaryConsolePosition = mapState.ConsoleCellPosition;
-                SummaryConsolesChanged.Invoke(this, new ConsoleListEventArgs(summaryControls));
+                SummaryConsolesChanged?.Invoke(this, new ConsoleListEventArgs(summaryControls));
             }
 
+            if (!_mouseHighlight.IsVisible && _lastSummaryConsolePosition != default)
+            {
+                // remove the summaries if we just moved out of a valid location
+                _lastSummaryConsolePosition = default;
+                SummaryConsolesChanged?.Invoke(this, new ConsoleListEventArgs(new List<Console>()));
+            }
+            
             return base.ProcessMouse(state);
         }
 
+        protected override void OnMouseLeftClicked(MouseConsoleState state)
+        {
+            if (_game.State != State.Targetting)
+            {
+                return;
+            }
+        }
+
+        private bool PlayerTurnProcessKeyboard(SadConsole.Input.Keyboard info)
+        {
+            if (info.IsKeyPressed(Keys.Escape))
+            {
+                _menuProvider.Pop.Show();
+                return true;
+            }
+
+            if (info.IsKeyPressed(Keys.I))
+            {
+                _menuProvider.Inventory.Show(Player.GetGoRogueComponent<IInventoryComponent>());
+                return true;
+            }
+
+            if (_game.HandleAsPlayerInput(info))
+            {
+                _lastSummaryConsolePosition = default;
+                return true;
+            }
+
+            return base.ProcessKeyboard(info);
+        }
+
+        private bool TargettingProcessKeyboard(SadConsole.Input.Keyboard info)
+        {
+            if (info.IsKeyPressed(Keys.Escape))
+            {
+                _game.State = State.PlayerTurn;
+                _menuProvider.Pop.Show();
+                return true;
+            }
+
+            if (info.IsKeyPressed(Keys.I))
+            {
+                _game.State = State.PlayerTurn;
+                _menuProvider.Inventory.Show(Player.GetGoRogueComponent<IInventoryComponent>());
+                return true;
+            }
+
+            // handle enter as confirm target
+
+            return base.ProcessKeyboard(info);
+        }
+        
         private void Player_Moved(object sender, ItemMovedEventArgs<IGameObject> e)
         {
             MapRenderer.CenterViewPortOnPoint(Player.Position);

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using RogueGame.GameSystems.Player;
 using RogueGame.Logging;
 using RogueGame.Maps;
 using SadConsole;
@@ -23,7 +24,8 @@ namespace RogueGame.Ui.Consoles
             IMapModeMenuProvider menuProvider,
             IMapFactory mapFactory,
             IMapPlan mapPlan,
-            ILogManager logManager)
+            ILogManager logManager,
+            Player playerInfo)
             : base(width, height)
         {
             _leftPane = CreateLeftPane();
@@ -34,7 +36,7 @@ namespace RogueGame.Ui.Consoles
             };
             _rightPane.Add("Started a new game, and here's the first message.");
 
-            var map = mapFactory.CreateCastleMap(7, 7, mapPlan);
+            var map = mapFactory.CreateCastleMap(7, 7, mapPlan, playerInfo);
             var tileSizeXFactor = tilesetFont.Size.X / Global.FontDefault.Size.X;
             var centerPaneWidth = width - LeftPaneWidth - RightPaneWidth;
 

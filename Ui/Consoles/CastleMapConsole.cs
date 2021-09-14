@@ -1,8 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using GoRogue;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using RogueGame.Components;
 using RogueGame.Entities;
 using RogueGame.Maps;
 using SadConsole;
+using SadConsole.Input;
+using Keyboard = SadConsole.Input.Keyboard;
 using XnaRect = Microsoft.Xna.Framework.Rectangle;
 
 namespace RogueGame.Ui.Consoles
@@ -48,6 +54,64 @@ namespace RogueGame.Ui.Consoles
 
             Children.Add(MapRenderer);
             Children.Add(_mouseHighlight);
+        }
+
+        public override bool ProcessKeyboard(Keyboard info)
+        {
+            if (info.IsKeyPressed(Keys.Escape))
+            {
+                _menuProvider.Pop.Show();
+                return true;
+            }
+
+            if (info.IsKeyPressed(Keys.I))
+            {
+                // todo - inventory from player/castle! fix this with proper Player class (not entity)
+                //_menuProvider.Inventory.Show(Player.GetGoRogueComponent<IInventoryComponent>());
+                // show empty inventory for now
+                _menuProvider.Inventory.Show(new InventoryComponent());
+                return true;
+            }
+            return base.ProcessKeyboard(info);
+        }
+
+        public override bool ProcessMouse(MouseConsoleState state)
+        {
+            var mapState = new MouseConsoleState(MapRenderer, state.Mouse);
+
+            var mapCoord = new Coord(
+                mapState.ConsoleCellPosition.X + MapRenderer.ViewPort.X,
+                mapState.ConsoleCellPosition.Y + MapRenderer.ViewPort.Y);
+
+            _mouseHighlight.IsVisible = mapState.IsOnConsole && Map.Explored[mapCoord];
+            _mouseHighlight.Position = mapState.ConsoleCellPosition;
+            if (mapState.IsOnConsole
+                && _lastSummaryConsolePosition != mapState.ConsoleCellPosition
+                && Map.FOV.CurrentFOV.Contains(mapCoord))
+            {
+                // update summaries
+                var summaryControls = new List<Console>();
+                foreach (var entity in Map.GetEntities<BasicEntity>(mapCoord))
+                {
+                    var control = entity.GetGoRogueComponent<ISummaryControlComponent>()?.GetSidebarSummary();
+                    if (control != null)
+                    {
+                        summaryControls.Add(control);
+                    }
+                }
+
+                _lastSummaryConsolePosition = mapState.ConsoleCellPosition;
+                SummaryConsolesChanged?.Invoke(this, new ConsoleListEventArgs(summaryControls));
+            }
+
+            if (!_mouseHighlight.IsVisible && _lastSummaryConsolePosition != default)
+            {
+                // remove the summaries if we just moved out of a valid location
+                _lastSummaryConsolePosition = default;
+                SummaryConsolesChanged?.Invoke(this, new ConsoleListEventArgs(new List<Console>()));
+            }
+
+            return base.ProcessMouse(state);
         }
     }
 }

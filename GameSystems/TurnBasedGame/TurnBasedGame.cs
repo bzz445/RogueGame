@@ -14,8 +14,9 @@ namespace RogueGame.GameSystems.TurnBasedGame
 {
     public enum State
     {
-        AwaitingInput,
-        Processing
+        PlayerTurn,
+        Processing,
+        Targetting
     }
     
     public class TurnBasedGame: ITurnBasedGame
@@ -38,16 +39,19 @@ namespace RogueGame.GameSystems.TurnBasedGame
 
         private readonly ILogManager _logManager;
 
-        private Player _player;
+        private Wizard _player;
         
         public TurnBasedGame(
             ILogManager logManager)
         {
             _logManager = logManager;
+            State = State.PlayerTurn;
         }
 
         public DungeonMap Map { get; set; }
 
+        public State State { get; set; }
+        
         public bool HandleAsPlayerInput(SadConsole.Input.Keyboard info)
         {
             foreach (Keys key in MovementDirectionMapping.Keys)
@@ -64,10 +68,10 @@ namespace RogueGame.GameSystems.TurnBasedGame
             return false;
         }
 
-        public void RegisterPlayer(Player player)
+        public void RegisterPlayer(Wizard player)
         {
             _player = player;
-            RegisterEntity(player);
+            RegisterEntity(_player);
         }
 
         public void RegisterEntity(McEntity entity)
@@ -85,6 +89,7 @@ namespace RogueGame.GameSystems.TurnBasedGame
 
         private void ProcessTurn()
         {
+            State = State.Processing;
             foreach (var entity in Map.Entities.Items.OfType<McEntity>().ToList())
             {
                 if (!_player.HasMap)
@@ -98,8 +103,9 @@ namespace RogueGame.GameSystems.TurnBasedGame
                 }
 
                 var ai = entity.GetGoRogueComponent<IAiComponent>();
-                ai?.Run(Map);
+                ai?.Run(Map, _logManager);
             }
+            State = State.PlayerTurn;
         }
         
         private void Entity_Bumped(object sender, ItemMovedEventArgs<McEntity> e)
@@ -122,31 +128,17 @@ namespace RogueGame.GameSystems.TurnBasedGame
                 if (healthComponent != null)
                 {
                     var damage = meleeAttackComponent.GetDamage();
-                    healthComponent.ApplyDamage(damage);
+                    healthComponent.ApplyDamage(damage, _logManager);
 
-                    var targetName = (healthComponent.Parent as BasicEntity)?.Name ?? "something";
-                    _logManager.EventLog($"{e.Item.Name} hit {targetName} for {damage:F0} damage.");
-
-                    if (healthComponent.Dead)
-                    {
-                        _logManager.EventLog($"{targetName} was slain.");
-
-                        if (healthComponent.Parent is McEntity mcTarget)
-                        {
-                            mcTarget.Remove();
-                        }
-                        else
-                        {
-                            Map.RemoveEntity(healthComponent.Parent);
-                        }
-                    }
+                    var targetName = (healthComponent.Parent as McEntity)?.ColoredName ?? "something";
+                    _logManager.EventLog($"{e.Item.ColoredName} hit {targetName} for {damage:F0} damage.");
                 }
             }
         }
 
         private void Entity_Moved(object sender, ItemMovedEventArgs<IGameObject> e)
         {
-            if (!(e.Item is BasicEntity movingEntity))
+            if (!(e.Item is McEntity movingEntity))
             {
                 return;
             }
@@ -156,7 +148,7 @@ namespace RogueGame.GameSystems.TurnBasedGame
                 Map.CalculateFOV(_player.Position, _player.FOVRadius, Radius.SQUARE);
             }
 
-            var stepTriggers = Map.GetEntities<BasicEntity>(movingEntity.Position)
+            var stepTriggers = Map.GetEntities<McEntity>(movingEntity.Position)
                 .SelectMany(e =>
                 {
                     if (!(e is IHasComponents entity))

@@ -1,5 +1,7 @@
 using GoRogue.GameFramework;
 using GoRogue.GameFramework.Components;
+using RogueGame.Entities;
+using RogueGame.Logging;
 
 namespace RogueGame.Components
 {
@@ -7,10 +9,13 @@ namespace RogueGame.Components
     {
         private float _health;
         
-        public HealthComponent(int maxHealth)
+        public HealthComponent(float maxHealth)
+            : this(maxHealth, maxHealth) { }
+
+        public HealthComponent(float maxHealth, float health)
         {
             MaxHealth = maxHealth;
-            Health = maxHealth;
+            Health = health;
         }
 
         /// <summary>
@@ -39,10 +44,14 @@ namespace RogueGame.Components
 
         public bool Dead => Health < 0.001;
         
-        public void ApplyDamage(float damage)
+        public void ApplyDamage(float damage, ILogManager logManager)
         {
-            var prevHealth = Health;
             Health = System.Math.Max(0, Health - damage);
+            if (Dead && Parent is McEntity mcParent)
+            {
+                logManager.EventLog($"{mcParent.ColoredName} was slain.");
+                mcParent.Remove();
+            }
         }
 
         public void ApplyHealing(float healing)

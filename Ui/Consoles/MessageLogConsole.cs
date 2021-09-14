@@ -14,8 +14,11 @@ namespace RogueGame.Ui.Consoles
         public MessageLogConsole(int width, int height, Font font)
         {
             _lines = new Queue<string>();
-            _messageConsole = new ScrollingConsole(width, height, font);
-            _messageConsole.DefaultBackground = ColorHelper.MidnightEstBlue;
+            _messageConsole = new ScrollingConsole(width, height, font)
+            {
+                DefaultBackground = ColorHelper.MidnightEstBlue
+            };
+
             Children.Add(_messageConsole);
         }
 
@@ -29,7 +32,7 @@ namespace RogueGame.Ui.Consoles
 
             _messageConsole.Cursor.Position = new Point(1, _lines.Count - 1);
 
-            var coloredMessage = new ColoredString($"> {message}\n", new Cell(Color.Gainsboro, ColorHelper.MidnightEstBlue));
+            var coloredMessage = new ColoredString($"> {message}\r\n", new Cell(Color.Gainsboro, ColorHelper.MidnightEstBlue));
             _messageConsole.Cursor.Print(coloredMessage);
         }
     }

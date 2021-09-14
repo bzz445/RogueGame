@@ -1,4 +1,5 @@
 using GoRogue.GameFramework.Components;
+using RogueGame.Logging;
 
 namespace RogueGame.Components
 {
@@ -11,7 +12,7 @@ namespace RogueGame.Components
 
         bool Dead { get; }
         
-        void ApplyDamage(float damage);
+        void ApplyDamage(float damage, ILogManager logManager);
         void ApplyHealing(float healing);
     }
 }
