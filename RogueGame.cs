@@ -62,7 +62,7 @@ namespace RogueGame
             colors.Lines = colors.Gray;
 
             colors.ControlBack = ColorHelper.MidnightEstBlue;
-            colors.ControlBackLight = ColorHelper.MidnightEstBlue;
+            colors.ControlBackLight = ColorHelper.SelectedControlBackBlue;
             colors.ControlBackSelected = colors.GrayDark;
             colors.ControlBackDark = ColorHelper.MidnightEstBlue;
             colors.ControlHostBack = ColorHelper.MidnightEstBlue;

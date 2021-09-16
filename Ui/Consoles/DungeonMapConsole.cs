@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using RogueGame.Components;
 using RogueGame.Entities;
-using RogueGame.GameSystems.Player;
+using RogueGame.GameSystems.Spells;
 using RogueGame.GameSystems.TurnBasedGame;
 using RogueGame.Maps;
 using SadConsole;
@@ -15,7 +15,7 @@ using XnaRect = Microsoft.Xna.Framework.Rectangle;
 
 namespace RogueGame.Ui.Consoles
 {
-    internal class DungeonMapConsole : ContainerConsole
+   internal class DungeonMapConsole : ContainerConsole
     {
         private readonly IMapModeMenuProvider _menuProvider;
         private readonly Console _mouseHighlight;
@@ -24,6 +24,7 @@ namespace RogueGame.Ui.Consoles
         private Point _lastSummaryConsolePosition;
 
         public event System.EventHandler<ConsoleListEventArgs> SummaryConsolesChanged;
+        public event System.EventHandler<string> FlavorMessageChanged;
 
         public DungeonMap Map { get; }
 
@@ -42,9 +43,10 @@ namespace RogueGame.Ui.Consoles
             _menuProvider = menuProvider;
             _game = game;
 
-            _mouseHighlight = new Console(1, 1, tilesetFont);
-            _mouseHighlight.SetGlyph(0, 0, 1, ColorHelper.WhiteHighlight);
-            _mouseHighlight.UseMouse = false;
+            _mouseHighlight = new Console(viewportWidth, viewportHeight, tilesetFont)
+            {
+                UseMouse = false,
+            };
 
             Map = map;
             _game.Map = map;
@@ -59,16 +61,14 @@ namespace RogueGame.Ui.Consoles
                     Player.Moved += Player_Moved;
                     continue;
                 }
-                
+
                 _game.RegisterEntity(entity);
             }
 
-            // Get a console that's set up to render the map, and add it as a child of this container so it renders
             MapRenderer = Map.CreateRenderer(new XnaRect(0, 0, viewportWidth, viewportHeight), tilesetFont);
             MapRenderer.UseMouse = false;
             IsFocused = true;
 
-            // Calculate initial FOV and center camera
             Map.CalculateFOV(Player.Position, Player.FOVRadius, Radius.SQUARE);
             MapRenderer.CenterViewPortOnPoint(Player.Position);
 
@@ -80,7 +80,7 @@ namespace RogueGame.Ui.Consoles
         {
             _menuProvider.Death.Show("You died.");
         }
-        
+
         public override bool ProcessKeyboard(SadConsole.Input.Keyboard info)
         {
             if (!Player.HasMap)
@@ -107,18 +107,18 @@ namespace RogueGame.Ui.Consoles
             {
                 return base.ProcessMouse(state);
             }
+
             var mapState = new MouseConsoleState(MapRenderer, state.Mouse);
 
             var mapCoord = new Coord(
                 mapState.ConsoleCellPosition.X + MapRenderer.ViewPort.X,
                 mapState.ConsoleCellPosition.Y + MapRenderer.ViewPort.Y);
 
-            _mouseHighlight.IsVisible = mapState.IsOnConsole && Map.Explored[mapCoord];
-            _mouseHighlight.Position = mapState.ConsoleCellPosition;
+            DrawMouseHighlight(mapState, mapCoord);
 
-            if (mapState.IsOnConsole
-                && _lastSummaryConsolePosition != mapState.ConsoleCellPosition
-                && Map.FOV.CurrentFOV.Contains(mapCoord))
+            var coordIsTargetable = mapState.IsOnConsole && Map.FOV.CurrentFOV.Contains(mapCoord);
+
+            if (coordIsTargetable && _lastSummaryConsolePosition != mapState.ConsoleCellPosition)
             {
                 // update summaries
                 var summaryControls = new List<Console>();
@@ -134,22 +134,55 @@ namespace RogueGame.Ui.Consoles
                 _lastSummaryConsolePosition = mapState.ConsoleCellPosition;
                 SummaryConsolesChanged?.Invoke(this, new ConsoleListEventArgs(summaryControls));
             }
-
+            
             if (!_mouseHighlight.IsVisible && _lastSummaryConsolePosition != default)
             {
                 // remove the summaries if we just moved out of a valid location
                 _lastSummaryConsolePosition = default;
                 SummaryConsolesChanged?.Invoke(this, new ConsoleListEventArgs(new List<Console>()));
             }
-            
+
+            if (coordIsTargetable && _game.State == State.Targetting)
+            {
+                TargettingProcessMouse(state, mapCoord);
+            }
+
             return base.ProcessMouse(state);
         }
 
-        protected override void OnMouseLeftClicked(MouseConsoleState state)
+        private void DrawMouseHighlight(MouseConsoleState state, Coord mapCoord)
         {
+            _mouseHighlight.IsVisible = state.IsOnConsole && Map.Explored[mapCoord];
+            if (!_mouseHighlight.IsVisible)
+            {
+                return;
+            }
+
+            _mouseHighlight.Clear();
+            var mousePos = state.ConsoleCellPosition;
+            if (_game.State == State.PlayerTurn)
+            {
+                _mouseHighlight.SetGlyph(mousePos.X, mousePos.Y, 1, ColorHelper.WhiteHighlight);
+                return;
+            }
+
             if (_game.State != State.Targetting)
             {
                 return;
+            }
+
+            var highlightColor = _game.TargettingSpell.TargettingStyle.Offensive
+                ? ColorHelper.RedHighlight
+                : ColorHelper.YellowHighlight;
+            _mouseHighlight.SetGlyph(mousePos.X, mousePos.Y, 1, highlightColor);
+        }
+
+        private void TargettingProcessMouse(MouseConsoleState state, Coord mapCoord)
+        {
+            if (state.Mouse.LeftClicked)
+            {
+                _game.TargetSelected(mapCoord);
+                EndTargettingMode();
             }
         }
 
@@ -167,6 +200,18 @@ namespace RogueGame.Ui.Consoles
                 return true;
             }
 
+            if (info.IsKeyPressed(Keys.Q))
+            {
+                _menuProvider.SpellSelect.Show(
+                    Player.GetGoRogueComponent<ISpellCastingComponent>().Spells,
+                    selectedSpell =>
+                        {
+                            BeginTargetting(selectedSpell);
+                        });
+
+                return true;
+            }
+
             if (_game.HandleAsPlayerInput(info))
             {
                 _lastSummaryConsolePosition = default;
@@ -180,14 +225,14 @@ namespace RogueGame.Ui.Consoles
         {
             if (info.IsKeyPressed(Keys.Escape))
             {
-                _game.State = State.PlayerTurn;
+                EndTargettingMode();
                 _menuProvider.Pop.Show();
                 return true;
             }
 
             if (info.IsKeyPressed(Keys.I))
             {
-                _game.State = State.PlayerTurn;
+                EndTargettingMode();
                 _menuProvider.Inventory.Show(Player.GetGoRogueComponent<IInventoryComponent>());
                 return true;
             }
@@ -196,7 +241,20 @@ namespace RogueGame.Ui.Consoles
 
             return base.ProcessKeyboard(info);
         }
-        
+
+        private void BeginTargetting(SpellTemplate spell)
+        {
+            _game.StartTargetting(spell);
+            FlavorMessageChanged?.Invoke(this, $"Aiming {spell.Name}...");
+        }
+
+        private void EndTargettingMode()
+        {
+            _game.State = State.PlayerTurn;
+            FlavorMessageChanged?.Invoke(this, string.Empty);
+            _mouseHighlight.SetGlyph(0, 0, 1, ColorHelper.WhiteHighlight);
+        }
+
         private void Player_Moved(object sender, ItemMovedEventArgs<IGameObject> e)
         {
             MapRenderer.CenterViewPortOnPoint(Player.Position);

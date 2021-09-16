@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using RogueGame.Components;
 using RogueGame.Components.AiComponents;
 using RogueGame.Entities;
+using RogueGame.GameSystems.Spells;
 using RogueGame.Logging;
 using RogueGame.Maps;
 using SadConsole;
@@ -52,6 +53,8 @@ namespace RogueGame.GameSystems.TurnBasedGame
 
         public State State { get; set; }
         
+        public SpellTemplate TargettingSpell { get; private set; }
+        
         public bool HandleAsPlayerInput(SadConsole.Input.Keyboard info)
         {
             foreach (Keys key in MovementDirectionMapping.Keys)
@@ -86,7 +89,24 @@ namespace RogueGame.GameSystems.TurnBasedGame
             entity.Moved -= Entity_Moved;
             entity.Bumped -= Entity_Bumped;
         }
+        
+        public void TargetSelected(Coord mapCoord)
+        {
+            foreach (var effect in TargettingSpell.Effects)
+            {
+                effect.Apply(_player, Map, mapCoord, _logManager);
+            }
 
+            TargettingSpell = null;
+            ProcessTurn();
+        }
+        
+        public void StartTargetting(SpellTemplate spell)
+        {
+            TargettingSpell = spell;
+            State = State.Targetting;
+        }
+        
         private void ProcessTurn()
         {
             State = State.Processing;
@@ -110,7 +130,6 @@ namespace RogueGame.GameSystems.TurnBasedGame
         
         private void Entity_Bumped(object sender, ItemMovedEventArgs<McEntity> e)
         {
-            //_logManager.DebugLog($"{e.Item.Name} bumped into something.");
             var meleeAttackComponent = e.Item.GetGoRogueComponent<IMeleeAttackerComponent>();
             if (meleeAttackComponent != null)
             {
